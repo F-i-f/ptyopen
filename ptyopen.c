@@ -452,12 +452,14 @@ main(argc, argv)
 	  }
 
 	/* Set the controlling terminal */
+#ifdef TIOCSCTTY
 	if (ioctl(0, TIOCSCTTY)==-1) 
 	  {
 	    fprintf(stderr, "%s[child]: TIOCSCTTY: %s\n",
 		    progname, strerror(errno));
 	    exit(255);
 	  }
+#endif /* def TIOCSCTTY */
 
 	/* Ready to exec */
 	if (execvp(argv[0], argv)==-1) 
@@ -506,7 +508,7 @@ main(argc, argv)
 	{
 	  fprintf(stderr, "%s: child got signal %d: %s%s\n",
 		  progname, WTERMSIG(child_status),
-		  sys_siglist[WTERMSIG(child_status)],
+		  strsignal(WTERMSIG(child_status)),
 		  WCOREDUMP(child_status) ? " (core dumped)" : "");
 	}
     }
@@ -939,13 +941,13 @@ dropprivs()
     if (seteuid(secure_uid)==-1) 
       {
 	fprintf(stderr, "%s: while dropping privileges: seteuid(%d): %s",
-		progname, secure_uid, strerror(errno));
+		progname, (int)secure_uid, strerror(errno));
 	exit(255);
       }
     if (setegid(secure_gid)==-1) 
       {
 	fprintf(stderr, "%s: while dropping privileges: setegid(%d): %s",
-		progname, secure_gid, strerror(errno));
+		progname, (int)secure_gid, strerror(errno));
 	exit(255);
       }
   }
@@ -959,13 +961,13 @@ getprivs()
     if (seteuid(unsecure_uid)==-1) 
       {
 	fprintf(stderr, "%s: while getting privileges: seteuid(%d): %s",
-		progname, unsecure_uid, strerror(errno));
+		progname, (int)unsecure_uid, strerror(errno));
 	exit(255);
       }
     if (setegid(unsecure_gid)==-1) 
       {
 	fprintf(stderr, "%s: while setting privileges: setegid(%d): %s",
-		progname, unsecure_gid, strerror(errno));
+		progname, (int)unsecure_gid, strerror(errno));
 	exit(255);
       }
   }
@@ -1325,7 +1327,7 @@ sig_fatal_h(sig)
   /* Disarm this signal handler */
   sa.sa_handler = SIG_DFL;
   sigemptyset(&sa.sa_mask);
-  sa.sa_flags = SA_NOMASK;
+  sa.sa_flags = SA_NODEFER;
   sigaction(sig, &sa, NULL);
 
   /* Raise the signal */
