@@ -732,6 +732,12 @@ setperms(fd, mode)
   return fchmod(fd, mode);
 }
 
+int  xselect(int  n,  fd_set  *readfds,  fd_set  *writefds,
+	     fd_set *exceptfds, struct timeval *timeout)
+{
+  return select(n, readfds, writefds, exceptfds, timeout);
+}
+
 /* Master loop */
 void 
 loop_on(fd, ring_size, eof_char)
@@ -748,6 +754,7 @@ loop_on(fd, ring_size, eof_char)
   size_t space;
   int pty_flags;
   int eof_pty;
+  int eof_stdin;
   /**/
 
   /* Prepare the rings */
@@ -796,6 +803,7 @@ loop_on(fd, ring_size, eof_char)
 
   /* Initially, all our fds are open */
   eof_pty   = 0;
+  eof_stdin = 0;
   
   /* Master loop */
   while(1) 
@@ -804,7 +812,7 @@ loop_on(fd, ring_size, eof_char)
       FD_ZERO(&readable_set);
       FD_ZERO(&writable_set);
       space = ring_space(in_ring);
-      if (space>0)                  
+      if (space>0 && !eof_stdin)                  
 	FD_SET(0,  &readable_set);
       if (space<ring_size && ! state_child_exited) 
 	FD_SET(fd, &writable_set);
@@ -817,7 +825,7 @@ loop_on(fd, ring_size, eof_char)
       /* If child has exited and the output ring is empty, bye bye */
       if (state_child_exited && eof_pty && space==ring_size) break;
       
-      activefds = select(maxfd, &readable_set, &writable_set, NULL, NULL);
+      activefds = xselect(maxfd, &readable_set, &writable_set, NULL, NULL);
       switch (activefds) 
 	{
 	case -1:
@@ -873,6 +881,7 @@ loop_on(fd, ring_size, eof_char)
 		{
 		case 0:
 		  ring_push_char(in_ring, eof_char);
+		  eof_stdin = 1;
 		  break;
 		case -1:
 		  fprintf(stderr, "%s: read() on stdin: %s\n",
@@ -1122,18 +1131,6 @@ ring_write(self, fd)
 	    {
 	      self->head = self->start;
 	    }
-	} else {
-	  fprintf(stderr, 
-		  "AIE: will return zero from ring_write:\n"
-		  "     Wanted %d\n"
-		  "       start = %8p\n"
-		  "       end   = %8p\n"
-		  "       head  = %8p\n"
-		  "       tail  = %8p\n"
-		  "       space = %d\n", 
-		  chunk, self->start, self->end, self->head, self->tail,
-		  self->space);
-	  abort();
 	}
     }
 
