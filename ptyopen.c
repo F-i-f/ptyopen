@@ -1404,6 +1404,8 @@ term_raw(verbose)
       *state_orig_termios = tios;
     }
   tios.c_lflag &= ~(ICANON|ECHO);
+  tios.c_cc[VMIN] = 0;
+  tios.c_cc[VTIME] = 0;
   if (tcsetattr(0, TCSAFLUSH, &tios)==-1) 
     {
       if  (verbose) 
