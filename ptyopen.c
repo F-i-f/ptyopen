@@ -95,7 +95,7 @@ main(argc, argv)
   int opt_write;
   size_t opt_ring_size;
   int child_status;
-  int parent_exit;
+  int parent_exit=0;
   struct sigaction sa;
   struct termios tios;
   /**/
@@ -1336,3 +1336,9 @@ sig_winch_h(sig)
       kill(state_child_pid, sig);
     }
 }
+
+/*
+  Local variables:
+  compile-command: "gcc -Wall -Werror -O2 -o ptyopen ptyopen.c"
+  End:
+*/
