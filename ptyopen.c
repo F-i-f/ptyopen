@@ -649,7 +649,7 @@ getpttypair(fds)
     }
 #endif /* HAVE_GETPT */
 
-  if ((slave = grantpt(ptmx))<0)
+  if (grantpt(ptmx)<0)
     {
       fprintf(stderr, "%s: grantpt(): %s\n", progname, strerror(errno));
       exit(255);
@@ -668,6 +668,30 @@ getpttypair(fds)
       fprintf(stderr, "%s: ptsname(): %s\n", progname, strerror(errno));
       exit(255);
     }
+
+  if ((slave = open(name, O_RDWR))<0)
+    {
+      fprintf(stderr, "%s: open(\"%s\"): %s\n", progname, name, 
+	      strerror(errno));
+      exit(255);
+    }
+
+#if defined(HAVE_ISASTREAM) && defined(I_PUSH)
+  if (isastream(slave))
+    {
+      if (ioctl(slave, I_PUSH, "ptem")<0)
+	{
+	  fprintf(stderr, "%s: I_PUSH ptem: %s\n", progname, strerror(errno));
+	  exit(255);
+	}
+      if (ioctl(slave, I_PUSH, "ldterm")<0)
+	{
+	  fprintf(stderr, "%s: I_PUSH ldterm: %s\n", progname, 
+		  strerror(errno));
+	  exit(255);
+	}
+    }
+#endif /* HAVE_ISASTREAM */
 
   fds[0] = ptmx;
   fds[1] = slave;
