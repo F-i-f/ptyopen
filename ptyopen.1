@@ -7,7 +7,7 @@ ptyopen \- Runs a command in a pseudo-terminal and redirects it to stdin/stdout
 .B ptyopen
 [-v] [--verbose] [-V] [--version] [-u] [--unsecure] [-w] [--write] [-r 
 .I size
-] [ --ringsize]
+] [ --ringsize
 .I size
 ] [-g 
 .I geometry
@@ -34,7 +34,7 @@ stdin is presented to the slave
 as terminal input.
 .PP
 .B ptyopen
-is useful to control programmatically programs that use the terminal
+is useful to control programmatically commands that use the terminal
 directly (typically by opening /dev/tty), like
 .B dump(1)
 or
@@ -44,4 +44,146 @@ for example.
 .SH OPTIONS
 .TP
 .I -v, --verbose
-Runs verbosely. For example
+Runs verbosely. Namely, 
+.B ptyopen
+will report "benign" errors while handling terminal capabilities and
+window sizing.
+.B ptyopen
+will also report verbosely the exit code of
+.I command.
+
+.TP
+.I -V, --version
+Prints 
+.B ptyopen's
+version.
+
+.TP
+.I -u, --unsecure
+If running under a system which requires
+.B ptyopen
+to be setuid root, the unsecure option allows 
+.B ptyopen
+to run without changing the permissions and ownership of the
+pseudo-terminal (and indeed makes
+.B ptyopen
+usable without making it setuid, at the expense of security).
+
+.TP
+.I -w, --write
+Allows write permissions to the pseudo-terminal. This is probably useless,
+unless you're running some interactive shell under
+.B ptyopen.
+
+.TP
+.I -r, --ringsize <size>
+Takes an argument, the number of bytes of
+.B ptyopen's
+input and output buffers. When writing to
+.B ptyopen's
+stdin, 
+.B ptyopen
+buffers some amount of data. Similarly, when the 
+.I program
+writes to the terminal,
+.B ptyopen
+buffers the output before sending it to stdout.
+One might want to change the default buffer size for obscure reasons.
+
+.TP
+.I -g, --geometry <geometry>
+Makes
+.I program
+believe it runs in a terminal whose size is given by 
+.I <geometry>. 
+For example 80x25 or 132x50.
+
+.TP
+.I -h, --help
+Prints a summary of these options.
+
+.SH NOTES
+.SS SIGNALS
+.B ptyopen
+traps almost all common deadly signals so that the pseudo-terminal
+permissions are restored correctly.
+
+.PP
+.B ptyopen
+also handles SIGTSTP and SIGCONT so that the slave
+.I command
+gets stopped and restarted when
+.B ptyopen's
+state changes.
+
+.PP
+Finally, window size changes get communicated correctly through
+SIGWINCH, unless the
+.I -g
+or
+.I --geometry
+(forced geometry) options are used.
+
+.SS BUFFERS
+.B ptyopen
+uses some internal buffers, which can be resized with the
+.I -r
+or
+.I --ringsize
+options. These buffers are in used in addition to the buffers used by
+the pseudo-terminal driver, and eventually the pipes and sockets
+connected to
+.B ptyopen's
+stdin and stdout.
+
+.SS END OF FILE
+If 
+.B ptyopen's
+stdin is closed, then an EOF character (as determined by the
+pseudo-terminal's capabilities) is sent to the terminal. Wether or not
+the slave
+.I command
+will take action on this EOF character depends on the
+.I command
+itself, and not
+.B ptyopen.
+
+.SS EXIT CODE
+.B ptyopen
+exits with the exit code of the slave
+.I command
+unless it encounters some error. In that case it will exit with 255.
+
+.SH SECURITY
+On BSD systems, 
+.B ptyopen 
+needs to be setuid root so that the pseudo-terminal's permissions and
+ownership can be changed.
+.B ptyopen
+will refuse to run without being setuid root (unless the
+.I -u
+or
+.I --unsecure
+options are used).
+.PP
+Althought great care has been taken to ensure that
+.B ptyopen
+does not present a security risc, your mileage may vary.
+
+.SH SEE ALSO
+.B expect(1), pty(7).
+
+.SH BUGS
+.B ptyopen
+does not take advantage of the
+.B grantpt(3)
+facilities offered by SysV systems or Linux with a recent libc.
+
+.SH AUTHOR
+Written and Copyright (C) 1998-2000 Philippe Troin <phil@fifi.org>.
+THIS PROGRAM COMES WITH ABSOLUTELY NO WARRANTY.
+
+.SH HISTORY
+This program was written as a way to control 
+.B dump(8)
+from a backup script.

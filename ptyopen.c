@@ -258,7 +258,7 @@ main(argc, argv)
 	}
       else if (strcmp("-V", argv[0])==0 || strcmp("--version", argv[0])==0)
 	{
-	  printf("%s version 0.8\n", progname);
+	  printf("%s version " VERSION "\n", progname);
 	  exit(0);
 	}
       else 

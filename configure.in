@@ -1,0 +1,43 @@
+# ptyopen - controls command in a pseudo-terminal
+# configure.in
+# Copyright (C) 2000 Philippe Troin <phil@fifi.org>
+#
+# $Id$
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+AC_PREREQ(2.0)
+AC_INIT(ptyopen.c)
+AM_INIT_AUTOMAKE(ptyopen, 0.8)
+
+### 1) Checking for system
+
+### 2) Checking for programs
+AC_PROG_CC
+
+### 3) Checking for libraries
+### 4) Checking for header files
+### 5) Checking for typedefs
+### 6) Checking for structures
+### 7) Checking for compiler characteristics
+### 8) Checking for library functions
+### 9) Check for "system services"
+
+### END
+AC_OUTPUT(Makefile)
+
+# Local variables:
+# mode: sh
+# end:
