@@ -1,3 +1,10 @@
+2001-11-16  Philippe Troin  <phil@fifi.org>
+
+	* ptyopen.c: Added prototype for ring_check.
+	(ring_check): Fixed signedness problems.
+	(ring_write): Same.
+	(sig_cont_h): Pretend to use the param.
+
 2001-07-29  Philippe Troin  <phil@fifi.org>
 
 	* Released 0.93.
@@ -34,7 +41,7 @@
 2000-09-26  Philippe Troin  <phil@fifi.org>
 
 	* Released 0.91.
-	
+
 	* configure.in: Bumped version to 0.91.
 
 	* ptyopen.c (main): Use strsignal only when we have it.

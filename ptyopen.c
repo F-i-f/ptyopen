@@ -1,20 +1,20 @@
 /*
   ptyopen - runs a program on a fake terminal
   ptyopen.c - main program
-  Copyright (C) 1999-2000 Philippe Troin <phil@fifi.org>
+  Copyright (C) 1999-2001 Philippe Troin <phil@fifi.org>
 
   $Id$
-  
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -70,15 +70,15 @@ typedef struct ring_st ring_t;
 # define _P_(a) ()
 #endif
 
-int 	    main           _P_((int, char*[]));
+int	    main           _P_((int, char*[]));
 #ifdef HAVE_GRANTPT
 #  define getprivs()       do ; while(0)
 #  define dropprivs()      do ; while(0)
 #  define ispriv()         1
 #else /* ! HAVE_GRANTPT */
-void 	    getprivs       _P_((void));
-void 	    dropprivs      _P_((void));
-int  	    ispriv         _P_((void));
+void	    getprivs       _P_((void));
+void	    dropprivs      _P_((void));
+int	    ispriv         _P_((void));
 #endif /* HAVE_GRANTPT */
 const char* getpttypair    _P_((int[2]));
 void*       xmalloc        _P_((size_t));
@@ -92,6 +92,9 @@ int         restoreperms   _P_((const char*, savedperms_t*));
 #endif /* HAVE_GRANTPT */
 int         setperms       _P_((int, mode_t));
 void        loop_on        _P_((int, size_t, const char));
+#ifndef NDEBUG
+void        ring_check     _P_((ring_t*));
+#endif /* NDEBUG */
 ring_t*     ring_construct _P_((size_t));
 void        ring_delete    _P_((ring_t*));
 size_t      ring_space     _P_((ring_t*));
@@ -124,28 +127,28 @@ const char *devptmx       = "/dev/ptmx";
 #define MAX_RING_SIZE (1<<30)
 
 /* Global variables */
-char* 	       	progname = "<unset>";
-int   	       	opt_verbose;
+char*		progname = "<unset>";
+int		opt_verbose;
 unsigned long   opt_geometry_width;
 unsigned long   opt_geometry_height;
 #ifndef HAVE_GRANTPT
-uid_t 	       	unsecure_uid;
-gid_t 	       	unsecure_gid;
-uid_t 	       	secure_uid;
-gid_t 	       	secure_gid;
+uid_t		unsecure_uid;
+gid_t		unsecure_gid;
+uid_t		secure_uid;
+gid_t		secure_gid;
 #endif
 int             child_exit_pipe          = -1; /* Some invalid fd value */
-const char*    	state_tty_name;
-savedperms_t   	state_tty_perms;
-int 	       	state_saved_stdin_flags  = -1;
-int 	        state_saved_stdout_flags = -1;
-struct termios* state_orig_termios; 
+const char*	state_tty_name;
+savedperms_t	state_tty_perms;
+int		state_saved_stdin_flags  = -1;
+int	        state_saved_stdout_flags = -1;
+struct termios* state_orig_termios;
 pid_t           state_child_pid;
 int             state_pty_fd;
 
 /* Main function */
-int 
-main(argc, argv) 
+int
+main(argc, argv)
      int argc;
      char *argv[];
 {
@@ -161,7 +164,7 @@ main(argc, argv)
   sigset_t sset;
   /**/
 
-#ifndef HAVE_GRANTPT  
+#ifndef HAVE_GRANTPT
   /* Remember our initial ids */
   unsecure_uid = geteuid();
   unsecure_gid = getegid();
@@ -174,13 +177,13 @@ main(argc, argv)
 
   /* Get our name */
   cptr=progname=argv[0];
-  while (*cptr) 
+  while (*cptr)
     {
-      if (*cptr=='/') 
+      if (*cptr=='/')
 	{
 	  progname = ++cptr;
 	}
-      else 
+      else
 	{
 	  ++cptr;
 	}
@@ -196,7 +199,7 @@ main(argc, argv)
 
   /* Check options */
   ++argv; --argc;
-  while (argc && argv[0][0]=='-') 
+  while (argc && argv[0][0]=='-')
     {
       if (strcmp("-v", argv[0])==0 || strcmp("--verbose", argv[0])==0)
 	{
@@ -214,20 +217,20 @@ main(argc, argv)
 	{
 	  opt_write=1;
 	}
-      else if (strcmp("-r", argv[0])==0 
-	       || strcmp ("--ringsize",  argv[0])==0) 
+      else if (strcmp("-r", argv[0])==0
+	       || strcmp ("--ringsize",  argv[0])==0)
 	{
 	  char *end;
 	  /**/
 
-	  if (argc<2) 
+	  if (argc<2)
 	    {
 	      fprintf(stderr, "%s: option %s requires an argument\n",
 		      progname, argv[0]);
 	      exit(255);
 	    }
 	  opt_ring_size=strtoul(argv[1], &end, 10);
-	  if (*end) 
+	  if (*end)
 	    {
 	      fprintf(stderr, "%s: %s is not a number\n",
 		      progname, argv[1]);
@@ -247,19 +250,19 @@ main(argc, argv)
 	  /**/
 
 	  start = argv[0]+11;
-	  if ( !*start) 
+	  if ( !*start)
 	    {
 	      fprintf(stderr, "%s: option %s requires an argument\n",
 		      progname, argv[0]);
 	      exit(255);
 	    }
 	  opt_ring_size=strtoul(start, &end, 10);
-	  if (*end) 
+	  if (*end)
 	    {
 	      fprintf(stderr, "%s: %s is not a number\n",
 		      progname, start);
 	      exit(255);
-	    }	  
+	    }
 	  if (opt_ring_size==0 || opt_ring_size>MAX_RING_SIZE)
 	    {
 	      fprintf(stderr, "%s: ring size out of range\n", progname);
@@ -272,7 +275,7 @@ main(argc, argv)
 	  char *end;
 	  /**/
 
-	  if (argc<2) 
+	  if (argc<2)
 	    {
 	      fprintf(stderr, "%s: option %s requires an argument\n",
 		      progname, argv[0]);
@@ -322,9 +325,9 @@ main(argc, argv)
 		 progname);
 	  exit(0);
 	}
-      else 
+      else
 	{
-	  fprintf(stderr, "%s: bad option \"%s\", try \"%s --help\"\n", 
+	  fprintf(stderr, "%s: bad option \"%s\", try \"%s --help\"\n",
 		  progname, argv[0], progname);
 	  exit(255);
 	}
@@ -332,7 +335,7 @@ main(argc, argv)
     }
 
   /* Check number of arguments */
-  if (argc==0) 
+  if (argc==0)
     {
       fprintf(stderr, "%s: not enough arguments, try \"%s --help\"\n",
 	      progname, progname);
@@ -343,115 +346,115 @@ main(argc, argv)
   sa.sa_handler = sig_fatal_h;
   sigfillset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART;
-  if (sigaction(SIGHUP, &sa, NULL)==-1) 
+  if (sigaction(SIGHUP, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGHUP): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGHUP): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGINT, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGINT, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGINT): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGINT): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGQUIT, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGQUIT, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGQUIT): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGQUIT): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGABRT, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGABRT, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGABRT): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGABRT): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGILL, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGILL, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGILL): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGILL): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGSEGV, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGSEGV, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGSEGV): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGSEGV): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGPIPE, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGPIPE, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGPIPE): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGPIPE): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGTERM, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGTERM, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGTERM): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGTERM): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGTRAP, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGTRAP, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGTRAP): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGTRAP): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
-  if (sigaction(SIGBUS, &sa, NULL)==-1) 
+    }
+  if (sigaction(SIGBUS, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGBUS): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGBUS): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }    
+    }
 
   /* Special handling for SIGSTOP and SIGCONT */
   sa.sa_handler = sig_tstp_h;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART|SA_NODEFER;
-  if (sigaction(SIGTSTP, &sa, NULL)==-1) 
+  if (sigaction(SIGTSTP, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGTSTP): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGTSTP): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
+    }
   sa.sa_handler = sig_cont_h;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART;
-  if (sigaction(SIGCONT, &sa, NULL)==-1) 
+  if (sigaction(SIGCONT, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGCONT): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGCONT): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
+    }
 
   /* Handle window size changes */
   sa.sa_handler = sig_winch_h;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART;
-  if (sigaction(SIGWINCH, &sa, NULL)==-1) 
+  if (sigaction(SIGWINCH, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGWINCH): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGWINCH): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
+    }
 
   /* Don't forget to cleanup at exit too ! */
   atexit(cleanup);
-  
+
   /* Ok, we're rolling: get the ptys */
   state_tty_name = getpttypair(pty_pair);
   state_pty_fd = pty_pair[0];
 
   /* Check/change perms */
-  if (!opt_unsecure) 
+  if (!opt_unsecure)
     {
-      if (saveperms(pty_pair[1],&state_tty_perms)==-1) 
+      if (saveperms(pty_pair[1],&state_tty_perms)==-1)
 	{
 	  fprintf(stderr, "%s: saving permissions on tty: %s\n",
 		  progname, strerror(errno));
 	  exit(255);
 	}
-      if (setperms(pty_pair[1], 
+      if (setperms(pty_pair[1],
 		   S_IRUSR | S_IWUSR | (opt_write ? S_IWGRP : 0))==-1) {
 	  fprintf(stderr, "%s: setting permissions on tty: %s\n",
 		  progname, strerror(errno));
@@ -460,7 +463,7 @@ main(argc, argv)
     }
 
   /* Get the termios EOF char on the slave */
-  if (tcgetattr(pty_pair[1], &tios)==-1) 
+  if (tcgetattr(pty_pair[1], &tios)==-1)
     {
       fprintf(stderr, "%s: tcgetattr on pty slave: %s\n",
 	      progname, strerror(errno));
@@ -468,7 +471,7 @@ main(argc, argv)
     }
 
   /* Are we on a tty ? If yes, then go into raw mode  on this term */
-  if (isatty(0)) 
+  if (isatty(0))
     term_raw(1);
   /* If we're on a tty OR we forced a geometry, set the window size */
   if (isatty(0) || opt_geometry_height > 0)
@@ -486,18 +489,18 @@ main(argc, argv)
   sa.sa_handler = sig_chld_h;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_NOCLDSTOP|SA_RESTART;
-  if (sigaction(SIGCHLD, &sa, NULL)==-1) 
+  if (sigaction(SIGCHLD, &sa, NULL)==-1)
     {
-      fprintf(stderr, "%s: sigaction(SIGCHLD): %s\n", 
+      fprintf(stderr, "%s: sigaction(SIGCHLD): %s\n",
 	      progname, strerror(errno));
       exit(255);
-    }  
+    }
 
   /* Fork it ! */
   fflush(stdin);
   fflush(stdout);
   fflush(stderr);
-  switch (state_child_pid = fork()) 
+  switch (state_child_pid = fork())
     {
     case -1:
       /* Error */
@@ -512,34 +515,34 @@ main(argc, argv)
 
 	/* Close the pty master */
 	close(pty_pair[0]);
-	
+
 	/* Create a new session */
-	if (setsid()==-1) 
+	if (setsid()==-1)
 	  {
 	    fprintf(stderr, "%s: cannot create a new session: %s\n",
 		    progname, strerror(errno));
 	    exit(255);
-	  }	
+	  }
 
 	/* Dup the pty slave to fds 0,1 and 2 */
-	for (i=0; i<=2; i++) 
+	for (i=0; i<=2; i++)
 	  {
-	    if (dup2(pty_pair[1], i)==-1) 
+	    if (dup2(pty_pair[1], i)==-1)
 	      {
-		fprintf(i==2 ? stdout : stderr, 
+		fprintf(i==2 ? stdout : stderr,
 			"%s[child]: cannot dup2 tty to fd %d: %s\n",
 			progname, i, strerror(errno));
 		exit(255);
 	      }
 	  }
-	
+
 	/* Close the tty original fd */
 	close(pty_pair[1]);
 
 	/* Clear CLOEXEC on these fds */
 	for (i=0; i<=2; i++)
 	  {
-	    if ((fdflags=fcntl(i, F_GETFD))==-1) 
+	    if ((fdflags=fcntl(i, F_GETFD))==-1)
 	      {
 		fprintf(stderr, "%s[child]: cannot F_GETFL on fd %d: %s\n",
 			progname, i, strerror(errno));
@@ -555,7 +558,7 @@ main(argc, argv)
 
 	/* Set the controlling terminal */
 #ifdef TIOCSCTTY
-	if (ioctl(0, TIOCSCTTY)==-1) 
+	if (ioctl(0, TIOCSCTTY)==-1)
 	  {
 	    fprintf(stderr, "%s[child]: TIOCSCTTY: %s\n",
 		    progname, strerror(errno));
@@ -564,7 +567,7 @@ main(argc, argv)
 #endif /* def TIOCSCTTY */
 
 	/* Ready to exec */
-	if (execvp(argv[0], argv)==-1) 
+	if (execvp(argv[0], argv)==-1)
 	  {
 	    fprintf(stderr, "%s[child]: cannot exec %s: %s\n",
 		    progname, argv[0], strerror(errno));
@@ -588,25 +591,25 @@ main(argc, argv)
   state_pty_fd = 0;
 
   /* Wait for the child to complete */
-  if (waitpid(state_child_pid, &child_status, 0)==-1) 
+  if (waitpid(state_child_pid, &child_status, 0)==-1)
     {
-      fprintf(stderr, "%s: waitpid() for child: %s\n", 
+      fprintf(stderr, "%s: waitpid() for child: %s\n",
 	      progname, strerror(errno));
       exit(255);
     }
-  if (WIFEXITED(child_status)) 
+  if (WIFEXITED(child_status))
     {
       parent_exit = WEXITSTATUS(child_status);
-      if (opt_verbose) 
+      if (opt_verbose)
 	{
 	  fprintf(stderr, "%s: child exited with code %d\n",
 		  progname, parent_exit);
 	}
     }
-  else if (WIFSIGNALED(child_status)) 
+  else if (WIFSIGNALED(child_status))
     {
       parent_exit = 254;
-      if (opt_verbose) 
+      if (opt_verbose)
 	{
 	  fprintf(stderr, "%s: child got signal %d%s%s%s\n",
 		  progname, WTERMSIG(child_status),
@@ -618,17 +621,17 @@ main(argc, argv)
 		  WCOREDUMP(child_status) ? " (core dumped)" : "");
 	}
     }
-  else 
+  else
     {
       fprintf(stderr, "%s: exotic exit status from child %08X\n",
 	      progname, child_status);
       exit(255);
     }
-    
+
   /* Restore perms */
-  if (!opt_unsecure) 
+  if (!opt_unsecure)
     {
-      if (restoreperms(state_tty_name, &state_tty_perms)==-1) 
+      if (restoreperms(state_tty_name, &state_tty_perms)==-1)
 	{
 	  fprintf(stderr, "%s: restoring permissions on tty: %s\n",
 		  progname, strerror(errno));
@@ -663,7 +666,7 @@ getpttypair(fds)
 #else /* ! HAVE_GETPT */
   if ((ptmx = open(devptmx, O_RDWR))<0)
     {
-      fprintf(stderr, "%s: open(\"%s\"): %s\n", progname, 
+      fprintf(stderr, "%s: open(\"%s\"): %s\n", progname,
 	      devptmx, strerror(errno));
       exit(255);
     }
@@ -691,7 +694,7 @@ getpttypair(fds)
 
   if ((slave = open(name, O_RDWR))<0)
     {
-      fprintf(stderr, "%s: open(\"%s\"): %s\n", progname, name, 
+      fprintf(stderr, "%s: open(\"%s\"): %s\n", progname, name,
 	      strerror(errno));
       exit(255);
     }
@@ -706,7 +709,7 @@ getpttypair(fds)
 	}
       if (ioctl(slave, I_PUSH, "ldterm")<0)
 	{
-	  fprintf(stderr, "%s: I_PUSH ldterm: %s\n", progname, 
+	  fprintf(stderr, "%s: I_PUSH ldterm: %s\n", progname,
 		  strerror(errno));
 	  exit(255);
 	}
@@ -745,7 +748,7 @@ getpttypair(fds)
   strcpy(tty_string, tty_prefix);
   pty_string[pty_size+2]=0;
   tty_string[tty_size+2]=0;
-  
+
   /* How many chars in the arrays ? */
   last_1st_char = ptty_1st_char+strlen(ptty_1st_char);
   last_2nd_char = ptty_2nd_char+strlen(ptty_2nd_char);
@@ -760,9 +763,9 @@ getpttypair(fds)
 	  getprivs();
 	  fds[0]=open(pty_string, O_RDWR|O_NOCTTY);
 	  dropprivs();
-	  if (fds[0]==-1) 
+	  if (fds[0]==-1)
 	    {
-	      switch(errno) 
+	      switch(errno)
 		{
 		case ENOENT:
 		  /* File not found */
@@ -772,7 +775,7 @@ getpttypair(fds)
 		  break;
 		case EACCES:
 		  /* File unreadable */
-		  if (!ispriv()) 
+		  if (!ispriv())
 		    {
 		      break;
 		    }
@@ -784,7 +787,7 @@ getpttypair(fds)
 		  exit(255);
 		}
 	    }
-	  else 
+	  else
 	    {
 	      /* Found the pty, try open the tty */
 	      tty_string[tty_size]   = *p_1st_char;
@@ -792,20 +795,20 @@ getpttypair(fds)
 	      getprivs();
 	      fds[1]=open(tty_string, O_RDWR|O_NOCTTY);
 	      dropprivs();
-	      if (fds[1]==-1) 
+	      if (fds[1]==-1)
 		{
 		  switch(errno) {
 		  case ENOENT:
 		    /* File not found */
-		    if (opt_verbose) 
+		    if (opt_verbose)
 		      {
 			fprintf(stderr, "%s: found %s without matching %s\n",
 				progname, pty_string, tty_string);
 		      }
 		    break;
 		  case EACCES:
-		    if (!ispriv()) 
-		      { 
+		    if (!ispriv())
+		      {
 			break;
 		      }
 		    /* If we're privileged *AND* we get EACCESS, fall
@@ -823,7 +826,7 @@ getpttypair(fds)
 			exit(255);
 		      }
 		}
-	      else 
+	      else
 		{
 		  /* Okie */
 		  free(pty_string);
@@ -840,30 +843,30 @@ no_more_ptys:
 #endif /* HAVE_GRANTPT */
 
 #ifndef HAVE_GRANTPT
-/* Save permissions on a fd for future restoration eventually */  
+/* Save permissions on a fd for future restoration eventually */
 int
-saveperms(fd,perms) 
+saveperms(fd,perms)
      int fd;
      savedperms_t* perms;
 {
   struct stat statbuf;
 
-  if (fstat(fd, &statbuf)==1) 
+  if (fstat(fd, &statbuf)==1)
     {
       return -1;
     }
-  else 
+  else
     {
       perms->uid  = statbuf.st_uid;
       perms->gid  = statbuf.st_gid;
-      perms->mode = statbuf.st_mode 
+      perms->mode = statbuf.st_mode
 	& (S_IRWXU|S_IRWXG|S_IRWXO|S_ISGID|S_ISUID|S_ISVTX);
       return 0;
     }
 }
 
 /* Restore permissions on a fd */
-int 
+int
 restoreperms(file, perms)
      const char* file;
      savedperms_t* perms;
@@ -882,7 +885,7 @@ restoreperms(file, perms)
 #endif /* ndef HAVE_GRANTPT */
 
 /* Set tty-permissions on a fd */
-int 
+int
 setperms(fd, mode)
      int fd;
      mode_t mode;
@@ -896,22 +899,22 @@ setperms(fd, mode)
 
   /* Retrieve the tty group */
   grbuf = getgrnam(tty_group);
-  if (grbuf==NULL) 
+  if (grbuf==NULL)
     {
-      if (opt_verbose) 
+      if (opt_verbose)
 	{
-	  fprintf(stderr, "%s: cannot find a group named %s\n", 
+	  fprintf(stderr, "%s: cannot find a group named %s\n",
 		  progname, tty_group);
 	}
       /* Use the user group, and remove permissions on group */
       group = secure_gid;
       mode &= ~S_IRWXG;
     }
-  else 
+  else
     {
       group = grbuf->gr_gid;
     }
-  
+
   /* Chown it with privs */
   getprivs();
   rv = fchown(fd, secure_uid, group);
@@ -930,7 +933,7 @@ int  xselect(int  n,  fd_set  *readfds,  fd_set  *writefds,
 }
 
 /* Master loop */
-void 
+void
 loop_on(fd, ring_size, eof_char)
      int fd;
      size_t ring_size;
@@ -980,36 +983,36 @@ loop_on(fd, ring_size, eof_char)
   /* Save the file descriptor flags for all the fds we'll manipulate */
   if ((state_saved_stdin_flags=fcntl(0, F_GETFL))==-1)
     {
-      fprintf(stderr, "%s: F_GETFL on stdin: %s\n", 
+      fprintf(stderr, "%s: F_GETFL on stdin: %s\n",
 	      progname, strerror(errno));
       exit(255);
     }
   if ((state_saved_stdout_flags=fcntl(1, F_GETFL))==-1)
     {
-      fprintf(stderr, "%s: F_GETFL on stdout: %s\n", 
+      fprintf(stderr, "%s: F_GETFL on stdout: %s\n",
 	      progname, strerror(errno));
       exit(255);
     }
   if ((pty_flags=fcntl(fd, F_GETFL))==-1)
     {
-      fprintf(stderr, "%s: F_GETFL on pty master: %s\n", 
+      fprintf(stderr, "%s: F_GETFL on pty master: %s\n",
 	      progname, strerror(errno));
       exit(255);
     }
 
   /* Set these descriptors to non blocking mode */
   if (fcntl(0, F_SETFL, state_saved_stdin_flags | O_NONBLOCK)==-1) {
-    fprintf(stderr, "%s: F_SETFL on stdin: %s\n", 
+    fprintf(stderr, "%s: F_SETFL on stdin: %s\n",
 	    progname, strerror(errno));
     exit(255);
   }
   if (fcntl(1, F_SETFL, state_saved_stdout_flags | O_NONBLOCK)==-1) {
-    fprintf(stderr, "%s: F_SETFL on stdout: %s\n", 
+    fprintf(stderr, "%s: F_SETFL on stdout: %s\n",
 	    progname, strerror(errno));
     exit(255);
   }
   if (fcntl(fd, F_SETFL, pty_flags | O_NONBLOCK)==-1) {
-    fprintf(stderr, "%s: F_SETFL on pty master: %s\n", 
+    fprintf(stderr, "%s: F_SETFL on pty master: %s\n",
 	    progname, strerror(errno));
     exit(255);
   }
@@ -1017,34 +1020,34 @@ loop_on(fd, ring_size, eof_char)
   /* Initially, all our fds are open */
   eof_pty   = 0;
   eof_stdin = 0;
-  
+
   /* Master loop */
-  while(1) 
-    {	 
+  while(1)
+    {
       /* Determine the ring states and set the fds to look at*/
       FD_ZERO(&readable_set);
       FD_ZERO(&writable_set);
       space = ring_space(in_ring);
-      if (space>0 && !eof_stdin)                  
+      if (space>0 && !eof_stdin)
 	FD_SET(0,  &readable_set);
-      if (space<ring_size && ! child_exited) 
+      if (space<ring_size && ! child_exited)
 	FD_SET(fd, &writable_set);
       space = ring_space(out_ring);
-      if (space>0 && !eof_pty) 
+      if (space>0 && !eof_pty)
 	FD_SET(fd, &readable_set);
-      if (space<ring_size)     
+      if (space<ring_size)
 	FD_SET(1,  &writable_set);
       if (!child_exited)
 	FD_SET(chld_pipes[0], &readable_set);
 
       /* If child has exited and the output ring is empty, bye bye */
       if (child_exited && eof_pty && space==ring_size) break;
-      
+
       activefds = xselect(maxfd, &readable_set, &writable_set, NULL, NULL);
-      switch (activefds) 
+      switch (activefds)
 	{
 	case -1:
-	  switch(errno) 
+	  switch(errno)
 	    {
 	    case EINTR:
 	      /* Signal occured, ok */
@@ -1088,7 +1091,7 @@ loop_on(fd, ring_size, eof_char)
 		  exit(255);
 		}
 	    }
-	  
+
 	  /* Try to read more stuff */
 	  if (FD_ISSET(0,  &readable_set))
 	    {
@@ -1104,7 +1107,7 @@ loop_on(fd, ring_size, eof_char)
 		  exit(255);
 		}
 	    }
-	  if (FD_ISSET(fd, &readable_set)) 
+	  if (FD_ISSET(fd, &readable_set))
 	    {
 	      switch(ring_read(out_ring, fd))
 		{
@@ -1112,7 +1115,7 @@ loop_on(fd, ring_size, eof_char)
 		  eof_pty = 1;
 		  break;
 		case -1:
-		  switch (errno) 
+		  switch (errno)
 		    {
 		    case EIO:
 		      /* The tty was closed */
@@ -1145,13 +1148,13 @@ loop_on(fd, ring_size, eof_char)
 
   /* Restore the descriptors modes */
   if (fcntl(0, F_SETFL, state_saved_stdin_flags)==-1) {
-    fprintf(stderr, "%s: F_SETFL on stdin: %s\n", 
+    fprintf(stderr, "%s: F_SETFL on stdin: %s\n",
 	    progname, strerror(errno));
     exit(255);
   }
   state_saved_stdin_flags=-1;
   if (fcntl(1, F_SETFL, state_saved_stdout_flags)==-1) {
-    fprintf(stderr, "%s: F_SETFL on stdout: %s\n", 
+    fprintf(stderr, "%s: F_SETFL on stdout: %s\n",
 	    progname, strerror(errno));
     exit(255);
   }
@@ -1161,16 +1164,16 @@ loop_on(fd, ring_size, eof_char)
 #ifndef HAVE_GRANTPT
 /* Drop setuid privileges */
 void
-dropprivs() 
+dropprivs()
 {
   if (ispriv()) {
-    if (seteuid(secure_uid)==-1) 
+    if (seteuid(secure_uid)==-1)
       {
 	fprintf(stderr, "%s: while dropping privileges: seteuid(%d): %s",
 		progname, (int)secure_uid, strerror(errno));
 	exit(255);
       }
-    if (setegid(secure_gid)==-1) 
+    if (setegid(secure_gid)==-1)
       {
 	fprintf(stderr, "%s: while dropping privileges: setegid(%d): %s",
 		progname, (int)secure_gid, strerror(errno));
@@ -1181,16 +1184,16 @@ dropprivs()
 
 /* Get setuid privileges */
 void
-getprivs() 
+getprivs()
 {
   if (ispriv()) {
-    if (seteuid(unsecure_uid)==-1) 
+    if (seteuid(unsecure_uid)==-1)
       {
 	fprintf(stderr, "%s: while getting privileges: seteuid(%d): %s",
 		progname, (int)unsecure_uid, strerror(errno));
 	exit(255);
       }
-    if (setegid(unsecure_gid)==-1) 
+    if (setegid(unsecure_gid)==-1)
       {
 	fprintf(stderr, "%s: while setting privileges: setegid(%d): %s",
 		progname, (int)unsecure_gid, strerror(errno));
@@ -1201,7 +1204,7 @@ getprivs()
 
 /* Are we a privileged (setuid) process */
 int
-ispriv() 
+ispriv()
 {
   return secure_uid != unsecure_uid || secure_gid != unsecure_gid;
 }
@@ -1209,12 +1212,12 @@ ispriv()
 
 /* Xmalloc, allocates memory and abort if something goes bad */
 void*
-xmalloc(size) 
+xmalloc(size)
      size_t size;
 {
   void* ptr;
   /**/
-  
+
   ptr = malloc(size);
   if (ptr==NULL) {
     fprintf(stderr, "%s: not enough memory\n", progname);
@@ -1251,15 +1254,16 @@ void
 ring_check(self)
      ring_t *self;
 {
-  int size = self->end - self->start;
+  ssize_t size = self->end - self->start;
+  assert(size > 0);
   assert(self->start <= self->head && self->head < self->end);
   assert(self->start <= self->tail && self->tail < self->end);
   if (self->tail==self->head)
-    assert(self->space == 0 || self->space == size);
+    assert(self->space == 0 || self->space == (size_t)size);
   else if (self->tail > self->head)
-    assert(self->space == size - (self->tail - self->head));
+    assert((ssize_t)self->space == size - (self->tail - self->head));
   else
-    assert(self->space == self->head - self->tail);
+    assert((ssize_t)self->space == self->head - self->tail);
 }
 #endif
 
@@ -1307,17 +1311,17 @@ ring_read(self, fd)
   int readcount=0;
   /**/
 
-  if (self->space) 
+  if (self->space)
     {
       size_t chunk;
       /**/
 
       /* Determine largest readable chunk */
-      if (self->tail >= self->head) 
+      if (self->tail >= self->head)
 	{
 	  chunk = self->end - self->tail;
 	}
-      else 
+      else
 	{
 	  chunk = self->head - self->tail;
 	}
@@ -1328,7 +1332,7 @@ ring_read(self, fd)
 	{
 	  self->tail  += readcount;
 	  self->space -= readcount;
-	  if (self->tail == self->end) 
+	  if (self->tail == self->end)
 	    {
 	      self->tail = self->start;
 	    }
@@ -1349,7 +1353,7 @@ ring_write(self, fd)
   int writtencount=0;
   /**/
 
-  if (self->space != self->end - self->start) 
+  if ((ssize_t)self->space != self->end - self->start)
     {
       size_t chunk;
       /**/
@@ -1359,14 +1363,14 @@ ring_write(self, fd)
 	{
 	  chunk = self->end - self->head;
 	}
-      else 
+      else
 	{
 	  chunk = self->tail - self->head;
 	}
 
       /* Write the chunk */
       writtencount = write(fd, self->head, chunk);
-      if (writtencount>0) 
+      if (writtencount>0)
 	{
 	  self->head  += writtencount;
 	  self->space += writtencount;
@@ -1390,7 +1394,7 @@ ring_push_char(self, c)
   int writtencount=0;
   /**/
 
-  if (self->space != 0) 
+  if (self->space != 0)
     {
       /* Write the byte for output */
       writtencount = 1;
@@ -1408,21 +1412,22 @@ ring_push_char(self, c)
 }
 
 /* Cleanup everything */
-void 
+void
 cleanup()
 {
   /* Restore our state */
-  if (state_saved_stdin_flags!=-1) 
+  if (state_saved_stdin_flags!=-1)
     {
       fcntl(0, F_SETFL, state_saved_stdin_flags);
     }
-  if (state_saved_stdout_flags!=-1) 
+  if (state_saved_stdout_flags!=-1)
     {
-      fcntl(1, F_SETFL, state_saved_stdout_flags); 
+      fcntl(1, F_SETFL, state_saved_stdout_flags);
     }
   if (state_tty_name)
     {
-      restoreperms(state_tty_name, &state_tty_perms);
+      if (restoreperms(state_tty_name, &state_tty_perms))
+	do {} while (0);
     }
 
   /* Restore terminal */
@@ -1444,9 +1449,9 @@ term_raw(verbose)
   sigprocmask(SIG_SETMASK, &blockedset, &oldset);
 
   /* Change the terminal */
-  if (tcgetattr(0, &tios)==-1) 
+  if (tcgetattr(0, &tios)==-1)
     {
-      if (verbose) 
+      if (verbose)
 	{
 	  fprintf(stderr, "%s: tcgetattr on current terminal: %s\n",
 		  progname, strerror(errno));
@@ -1454,7 +1459,7 @@ term_raw(verbose)
 	}
       return -1;
     }
-  if (state_orig_termios==NULL) 
+  if (state_orig_termios==NULL)
     {
       state_orig_termios  = xmalloc(sizeof(struct termios));
       *state_orig_termios = tios;
@@ -1462,9 +1467,9 @@ term_raw(verbose)
   tios.c_lflag &= ~(ICANON|ECHO);
   tios.c_cc[VMIN] = 1;
   tios.c_cc[VTIME] = 0;
-  if (tcsetattr(0, TCSAFLUSH, &tios)==-1) 
+  if (tcsetattr(0, TCSAFLUSH, &tios)==-1)
     {
-      if  (verbose) 
+      if  (verbose)
 	{
 	  fprintf(stderr, "%s: tcsetattr on current terminal: %s\n",
 		  progname, strerror(errno));
@@ -1488,15 +1493,15 @@ term_restore(verbose)
       sigset_t blockedset;
       sigset_t oldset;
       /**/
-      
+
       /* Block all signals */
       sigfillset(&blockedset);
       sigprocmask(SIG_SETMASK, &blockedset, &oldset);
 
       /* Restore the terminal */
-      if (tcsetattr(0, TCSAFLUSH, state_orig_termios)==-1) 
+      if (tcsetattr(0, TCSAFLUSH, state_orig_termios)==-1)
 	{
-	  if  (verbose) 
+	  if  (verbose)
 	    {
 	      fprintf(stderr, "%s: tcsetattr on current terminal: %s\n",
 		      progname, strerror(errno));
@@ -1518,7 +1523,7 @@ int
 term_winsize(verbose)
      int verbose;
 {
-  if (state_pty_fd) 
+  if (state_pty_fd)
     {
       struct winsize ws;
       if (opt_geometry_height == 0 && opt_geometry_width == 0)
@@ -1602,7 +1607,7 @@ sig_tstp_h(sig)
 
   /* Restore terminal */
   if (term_restore(0)==-1) _exit(255);
-  
+
   /* Warn child */
   kill(state_child_pid, sig);
 
@@ -1617,7 +1622,7 @@ sig_tstp_h(sig)
 
   /* Restore old action */
   sigaction(SIGTSTP, &oldsa, NULL);
-  
+
 }
 
 /* Continuation */
@@ -1625,6 +1630,7 @@ void
 sig_cont_h(sig)
      int sig;
 {
+  if (0) sig=0;
   if (term_raw(0)==-1) _exit(255);
   kill(state_child_pid, SIGWINCH);
 }
@@ -1634,7 +1640,7 @@ void
 sig_winch_h(sig)
      int sig;
 {
-  if (term_winsize(0)!=-1) 
+  if (term_winsize(0)!=-1)
     {
       kill(state_child_pid, sig);
     }
