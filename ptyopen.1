@@ -1,0 +1,47 @@
+.TH PTYOPEN 1 "$Id$" "Debian" ""
+
+.SH NAME
+ptyopen \- Runs a command in a pseudo-terminal and redirects it to stdin/stdout
+
+.SH SYNOPSYS
+.B ptyopen
+[-v] [--verbose] [-V] [--version] [-u] [--unsecure] [-w] [--write] [-r 
+.I size
+] [ --ringsize]
+.I size
+] [-g 
+.I geometry
+] [--geometry 
+.I geometry
+] [-h] [--help]
+.I command [arguments...]
+
+.SH DESCRIPTION
+.PP
+.B ptyopen
+creates a pseudo-terminal and runs the specified
+.I command
+with its
+.I arguments
+in it. All tty output of the slave
+.I command
+is redirected to 
+.B ptyopen's
+stdout. All data fed into
+.B ptyopen's
+stdin is presented to the slave
+.I command
+as terminal input.
+.PP
+.B ptyopen
+is useful to control programmatically programs that use the terminal
+directly (typically by opening /dev/tty), like
+.B dump(1)
+or
+.B telnet(1)
+for example.
+
+.SH OPTIONS
+.TP
+.I -v, --verbose
+Runs verbosely. For example
