@@ -30,6 +30,8 @@ AC_PROG_CPP
 
 ### 3) Checking for libraries
 ### 4) Checking for header files
+AC_CHECK_HEADERS(stropts.h)
+
 ### 5) Checking for typedefs
 ### 6) Checking for structures
 ### 7) Checking for compiler characteristics

@@ -31,6 +31,9 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#ifdef HAVE_STROPTS_H
+#  include <stropts.h>
+#endif
 #include <termios.h>
 #include <signal.h>
 #include <grp.h>
@@ -676,9 +679,10 @@ getpttypair(fds)
       exit(255);
     }
 
-#if defined(HAVE_ISASTREAM) && defined(I_PUSH)
+#if defined(HAVE_ISASTREAM)
   if (isastream(slave))
     {
+      fprintf(stderr, "PUSHING...\n");
       if (ioctl(slave, I_PUSH, "ptem")<0)
 	{
 	  fprintf(stderr, "%s: I_PUSH ptem: %s\n", progname, strerror(errno));
