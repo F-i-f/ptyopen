@@ -15,6 +15,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+static char CVSID="$Version$";
+
 #ifndef NDEBUG
 #include <assert.h>
 #define RING_CHECK(ring) ring_check(ring)
@@ -785,17 +787,17 @@ loop_on(fd, ring_size, eof_char)
     }
 
   /* Set these descriptors to non blocking mode */
-  if (fcntl(0, F_SETFL, state_saved_stdin_flags & O_NONBLOCK)==-1) {
+  if (fcntl(0, F_SETFL, state_saved_stdin_flags | O_NONBLOCK)==-1) {
     fprintf(stderr, "%s: F_SETFL on stdin: %s\n", 
 	    progname, strerror(errno));
     exit(255);
   }
-  if (fcntl(1, F_SETFL, state_saved_stdout_flags & O_NONBLOCK)==-1) {
+  if (fcntl(1, F_SETFL, state_saved_stdout_flags | O_NONBLOCK)==-1) {
     fprintf(stderr, "%s: F_SETFL on stdout: %s\n", 
 	    progname, strerror(errno));
     exit(255);
   }
-  if (fcntl(fd, F_SETFL, pty_flags & O_NONBLOCK)==-1) {
+  if (fcntl(fd, F_SETFL, pty_flags | O_NONBLOCK)==-1) {
     fprintf(stderr, "%s: F_SETFL on pty master: %s\n", 
 	    progname, strerror(errno));
     exit(255);
