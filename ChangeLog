@@ -1,3 +1,25 @@
+2000-09-20  Philippe Troin  <phil@fifi.org>
+
+	* configure.in: Autoconf variable for passing to "make install"
+	the right (eventually suid) flags depending on wether or not we
+	use SVr4 ptys.
+
+	* Makefile.am (INSTALL_PROGRAM): Have the install flags for
+	ptyopen depend on an autoconf variable.
+
+	* configure.in: Bumped up version to 0.90.
+
+	* ptyopen.c: Added copyright notice. Includes config.h if
+	needed. Includes stropt.h if needed. Enable SVr4 streams.
+	(xstrdup): Created.
+	(term_raw): Make sure to clear VMIN and VMAX control characters to
+	get zero delays in non-canonical terminal input.
+	(term_winsize): Missing end-of-lines.
+
+	* ptyopen.1: Clarify the -u usage with SVr4 ptys.
+
+	* configure.in: Auto-detect SVr4 ptys.
+
 2000-07-27  Philippe Troin  <phil@fifi.org>
 
 	* Makefile.am (EXTRA_DIST): Added man_MANS.

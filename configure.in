@@ -37,6 +37,13 @@ AC_CHECK_HEADERS(stropts.h)
 ### 7) Checking for compiler characteristics
 ### 8) Checking for library functions
 AC_CHECK_FUNCS(getpt grantpt unlockpt isastream)
+if test "$ac_cv_func_grantpt" = "yes"
+then
+    exeinstflags="-m 755"
+else
+    exeinstflags="-m 4755 -o root -g root"
+fi
+AC_SUBST(exeinstflags)
 
 ### 9) Check for "system services"
 
