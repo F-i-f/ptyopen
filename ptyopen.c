@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-static char CVSID="$Version$";
+static char CVSID="Header$";
 
 #ifndef NDEBUG
 #include <assert.h>
