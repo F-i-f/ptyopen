@@ -9,6 +9,9 @@
 /* Define if you have the isastream function.  */
 #undef HAVE_ISASTREAM
 
+/* Define if you have the strsignal function.  */
+#undef HAVE_STRSIGNAL
+
 /* Define if you have the unlockpt function.  */
 #undef HAVE_UNLOCKPT
 

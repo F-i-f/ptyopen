@@ -691,7 +691,7 @@ fi
 
 PACKAGE=ptyopen
 
-VERSION=0.90
+VERSION=0.91
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -1127,7 +1127,7 @@ done
 ### 6) Checking for structures
 ### 7) Checking for compiler characteristics
 ### 8) Checking for library functions
-for ac_func in getpt grantpt unlockpt isastream
+for ac_func in strsignal getpt grantpt unlockpt isastream
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:1134: checking for $ac_func" >&5

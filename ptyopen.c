@@ -594,9 +594,13 @@ main(argc, argv)
       parent_exit = 254;
       if (opt_verbose) 
 	{
-	  fprintf(stderr, "%s: child got signal %d: %s%s\n",
+	  fprintf(stderr, "%s: child got signal %d%s%s%s\n",
 		  progname, WTERMSIG(child_status),
-		  strsignal(WTERMSIG(child_status)),
+#ifdef HAVE_STRSIGNAL
+		  ": ", strsignal(WTERMSIG(child_status)),
+#else /* ! HAVE_STRSIGNAL */
+		  "", "",
+#endif /* HAVE_STRSIGNAL */
 		  WCOREDUMP(child_status) ? " (core dumped)" : "");
 	}
     }

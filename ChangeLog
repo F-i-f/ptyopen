@@ -1,3 +1,13 @@
+2000-09-26  Philippe Troin  <phil@fifi.org>
+
+	* Release 0.91.
+	
+	* configure.in: Bumped version to 0.91.
+
+	* ptyopen.c (main): Use strsignal only when we have it.
+
+	* configure.in: Added check for strsignal.
+
 2000-09-20  Philippe Troin  <phil@fifi.org>
 
 	* Released 0.90.
