@@ -15,6 +15,13 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#ifndef NDEBUG
+#include <assert.h>
+#define RING_CHECK(ring) ring_check(ring)
+#else
+#define RING_CHECK(ring) do ; while(0)
+#endif
+
 /* Structures */
 typedef struct {
   uid_t  uid;
@@ -66,6 +73,7 @@ const char *ptty_1st_char = "pqrstuvwxyz";
 const char *ptty_2nd_char = "0123456789abcdef";
 const char *tty_group     = "tty";
 #define DEFAULT_RING_SIZE 10240
+#define MAX_RING_SIZE (1<<30)
 
 /* Global variables */
 char* 	       	progname = "<unset>";
@@ -74,7 +82,7 @@ uid_t 	       	unsecure_uid;
 gid_t 	       	unsecure_gid;
 uid_t 	       	secure_uid;
 gid_t 	       	secure_gid;
-int   	       	state_child_exited;
+volatile int    state_child_exited;
 const char*    	state_tty_name;
 savedperms_t   	state_tty_perms;
 int 	       	state_saved_stdin_flags  = -1;
@@ -164,6 +172,11 @@ main(argc, argv)
 		      progname, argv[1]);
 	      exit(255);
 	    }
+	  if (opt_ring_size==0 || opt_ring_size>MAX_RING_SIZE)
+	    {
+	      fprintf(stderr, "%s: ring size out of range\n", progname);
+	      exit(255);
+	    }
 	  ++argv; --argc;
 	}
       else if (strncmp("--ringsize=", argv[0], 11)==0)
@@ -184,6 +197,11 @@ main(argc, argv)
 	    {
 	      fprintf(stderr, "%s: %s is not a number\n",
 		      progname, start);
+	      exit(255);
+	    }	  
+	  if (opt_ring_size==0 || opt_ring_size>MAX_RING_SIZE)
+	    {
+	      fprintf(stderr, "%s: ring size out of range\n", progname);
 	      exit(255);
 	    }
 	}
@@ -975,6 +993,24 @@ struct ring_st {
 };
 
 
+/* Ring check */
+#ifndef NDEBUG
+void
+ring_check(self)
+     ring_t *self;
+{
+  int size = self->end - self->start;
+  assert(self->start <= self->head && self->head < self->end);
+  assert(self->start <= self->tail && self->tail < self->end);
+  if (self->tail==self->head)
+    assert(self->space == 0 || self->space == size);
+  else if (self->tail > self->head)
+    assert(self->space == size - (self->tail - self->head));
+  else
+    assert(self->space == self->head - self->tail);
+}
+#endif
+
 /* Ring allocation */
 ring_t*
 ring_construct(size)
@@ -987,6 +1023,7 @@ ring_construct(size)
   self->head  = self->tail = self->start;
   self->space  = size;
 
+  RING_CHECK(self);
   return self;
 }
 
@@ -995,6 +1032,7 @@ void
 ring_delete(self)
      ring_t *self;
 {
+  RING_CHECK(self);
   free(self->start);
   free(self);
 }
@@ -1004,6 +1042,7 @@ size_t
 ring_space(self)
      ring_t *self;
 {
+  RING_CHECK(self);
   return self->space;
 }
 
@@ -1044,6 +1083,8 @@ ring_read(self, fd)
 	}
 
     }
+
+  RING_CHECK(self);
   return readcount;
 }
 
@@ -1095,6 +1136,8 @@ ring_write(self, fd)
 	  abort();
 	}
     }
+
+  RING_CHECK(self);
   return writtencount;
 }
 
@@ -1116,9 +1159,11 @@ ring_push_char(self, c)
       self->space -= 1;
       if (self->tail == self->end)
 	{
-	  self->head = self->start;
+	  self->tail = self->start;
 	}
     }
+
+  RING_CHECK(self);
   return writtencount;
 }
 
@@ -1339,6 +1384,6 @@ sig_winch_h(sig)
 
 /*
   Local variables:
-  compile-command: "gcc -Wall -Werror -O2 -o ptyopen ptyopen.c"
+  compile-command: "gcc -Wall -Werror -O2 -s -o ptyopen ptyopen.c"
   End:
 */
