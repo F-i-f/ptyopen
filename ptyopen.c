@@ -80,6 +80,8 @@ const char *tty_group     = "tty";
 /* Global variables */
 char* 	       	progname = "<unset>";
 int   	       	opt_verbose;
+unsigned long   opt_geometry_width;
+unsigned long   opt_geometry_height;
 uid_t 	       	unsecure_uid;
 gid_t 	       	unsecure_gid;
 uid_t 	       	secure_uid;
@@ -138,6 +140,8 @@ main(argc, argv)
   opt_unsecure=0;
   opt_write=0;
   opt_ring_size = DEFAULT_RING_SIZE;
+  opt_geometry_width = 0;
+  opt_geometry_height = 0;
 
   /* Check options */
   ++argv; --argc;
@@ -207,6 +211,35 @@ main(argc, argv)
 	      exit(255);
 	    }
 	}
+      else if (strcmp("-g", argv[0])==0 || strcmp("--geometry", argv[0])==0)
+	{
+	  char *start;
+	  char *end;
+	  /**/
+
+	  if (argc<2) 
+	    {
+	      fprintf(stderr, "%s: option %s requires an argument\n",
+		      progname, argv[0]);
+	      exit(255);
+	    }
+	  opt_geometry_width = strtoul(argv[1], &end, 10);
+	  if (*end != 'x')
+	    {
+	    bad_geom:
+	      fprintf(stderr, "%s: bad geometry specification \"%s\"\n",
+		      progname, argv[1]);
+	      exit(255);
+	    }
+	  start = end+1;
+	  opt_geometry_height = strtoul(start, &end, 10);
+	  if (*end) goto bad_geom;
+
+	  if (opt_geometry_width == 0 || opt_geometry_width >= 65536
+	      || opt_geometry_height == 0 || opt_geometry_height >= 65536)
+	    goto bad_geom;
+	  --argc, ++argv;
+	}
       else if (strcmp("-h", argv[0])==0 || strcmp("--help", argv[0])==0)
 	{
 	  printf("usage: %s <options> <program> <args>...\n"
@@ -216,6 +249,8 @@ main(argc, argv)
 		 "  -u, --unsecure    : runs unsecurely\n"
 		 "  -w, --write:      : allows tty to be write(1)n to\n"
 		 "  -r, --ringsize <s>: use a ring of <s> bytes\n"
+		 "  -g, --geometry <g>: pretends the terminal size is <g> "
+		 " (eg. 123x50)\n"
 		 "  -h, --help        : prints this help\n",
 		 progname,
 		 progname);
@@ -223,7 +258,7 @@ main(argc, argv)
 	}
       else if (strcmp("-V", argv[0])==0 || strcmp("--version", argv[0])==0)
 	{
-	  printf("%s version 0.1\n", progname);
+	  printf("%s version 0.8\n", progname);
 	  exit(0);
 	}
       else 
@@ -1279,16 +1314,26 @@ term_winsize(verbose)
 {
   if (state_pty_fd) 
     {
-      struct winsize ws;;
-      if (ioctl(0, TIOCGWINSZ, &ws)==-1)
+      struct winsize ws;
+      if (opt_geometry_height == 0 && opt_geometry_width == 0)
 	{
-	  if (verbose)
+	  if (ioctl(0, TIOCGWINSZ, &ws)==-1)
 	    {
-	      fprintf(stderr, "%s: TIOCGWINSZ on stdin: %s",
-		      progname, strerror(errno));
-	      exit(255);
+	      if (verbose)
+		{
+		  fprintf(stderr, "%s: TIOCGWINSZ on stdin: %s",
+			  progname, strerror(errno));
+		  exit(255);
+		}
+	      return -1;
 	    }
-	  return -1;
+	}
+      else
+	{
+	  ws.ws_row = opt_geometry_height;
+	  ws.ws_col = opt_geometry_width;
+	  ws.ws_xpixel = 0;
+	  ws.ws_ypixel = 0;
 	}
       if (ioctl(state_pty_fd, TIOCSWINSZ, &ws)==-1)
 	{
