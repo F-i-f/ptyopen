@@ -1,0 +1,17 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if you have the getpt function.  */
+#undef HAVE_GETPT
+
+/* Define if you have the grantpt function.  */
+#undef HAVE_GRANTPT
+
+/* Define if you have the unlockpt function.  */
+#undef HAVE_UNLOCKPT
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+
