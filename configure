@@ -1086,7 +1086,7 @@ echo "$ac_t""$CPP" 1>&6
 ### 6) Checking for structures
 ### 7) Checking for compiler characteristics
 ### 8) Checking for library functions
-for ac_func in getpt grantpt unlockpt
+for ac_func in getpt grantpt unlockpt isastream
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:1093: checking for $ac_func" >&5

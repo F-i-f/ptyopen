@@ -637,7 +637,7 @@ getpttypair(fds)
 #ifdef HAVE_GETPT
   if ((ptmx = getpt())<0)
     {
-      fprintf(stderr, "%s: getpt(): %s\n", progname, sterror(errno));
+      fprintf(stderr, "%s: getpt(): %s\n", progname, strerror(errno));
       exit(255);
     }
 #else /* ! HAVE_GETPT */

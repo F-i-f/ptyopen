@@ -6,6 +6,9 @@
 /* Define if you have the grantpt function.  */
 #undef HAVE_GRANTPT
 
+/* Define if you have the isastream function.  */
+#undef HAVE_ISASTREAM
+
 /* Define if you have the unlockpt function.  */
 #undef HAVE_UNLOCKPT
 
