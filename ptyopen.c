@@ -1,7 +1,7 @@
 /*
   ptyopen - runs a program on a fake terminal
   ptyopen.c - main program
-  Copyright (C) 1999-2000 Phlippe Troin <phil@fifi.org>
+  Copyright (C) 1999-2000 Philippe Troin <phil@fifi.org>
 
   $Id$
   

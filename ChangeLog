@@ -1,5 +1,7 @@
 2000-10-17  Philippe Troin  <phil@fifi.org>
 
+	* ptyopen.1: Added copyright notice in manpage and fixed typos.
+
 	* ptyopen.c (main): Includes copyright notice in --version.
 
 2000-09-30  Philippe Troin  <phil@fifi.org>
