@@ -1,0 +1,9 @@
+NEWS file for ptyopen -*- outline -*-
+
+* Changes in 0.94.
+
+** Fixed a controlling tty problem on SysV systems.
+
+Earlier releases of ptyopen did not set the controlling terminal
+correctly on SysV systems (lacking a TIOCSCTTY ioctl).
+

@@ -558,12 +558,37 @@ main(argc, argv)
 
 	/* Set the controlling terminal */
 #ifdef TIOCSCTTY
+	/* BSD method, with ioctl */
 	if (ioctl(0, TIOCSCTTY)==-1)
 	  {
 	    fprintf(stderr, "%s[child]: TIOCSCTTY: %s\n",
 		    progname, strerror(errno));
 	    exit(255);
 	  }
+#else
+	/* SysV method, do open... */
+	if (close(0)<0)
+	  {
+	    fprintf(stderr, "%s[child]: cannot close stdin: %s\n",
+		    progname, strerror(errno));
+	    exit(255);
+	  }
+	{
+	  int fd;
+	  fd = open(state_tty_name, O_RDONLY);
+	  if (fd < 0)
+	    {
+	      fprintf(stderr, "%s[child]: cannot open %s read-only: %s\n",
+		      progname, state_tty_name, strerror(errno));
+	      exit(255);
+	    }
+	  if (fd != 0)
+	    {
+	      fprintf(stderr, "%s[child]: open returned unexpected fd %d\n",
+		      progname, fd);
+	      exit(255);
+	    }
+	}
 #endif /* def TIOCSCTTY */
 
 	/* Ready to exec */

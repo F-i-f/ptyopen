@@ -1,9 +1,17 @@
 2001-11-16  Philippe Troin  <phil@fifi.org>
 
+	* Released 0.94.
+
+	* NEWS: Created.
+
+	* configure.in: Bumped version to 0.94.
+
 	* ptyopen.c: Added prototype for ring_check.
 	(ring_check): Fixed signedness problems.
 	(ring_write): Same.
 	(sig_cont_h): Pretend to use the param.
+	(main): Do reopen on slave tty SysVish systems which do NOT have
+	TIOCSCTTY.
 
 2001-07-29  Philippe Troin  <phil@fifi.org>
 
