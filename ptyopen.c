@@ -679,10 +679,9 @@ getpttypair(fds)
       exit(255);
     }
 
-#if defined(HAVE_ISASTREAM)
+#if defined(HAVE_ISASTREAM) && defined(I_PUSH)
   if (isastream(slave))
     {
-      fprintf(stderr, "PUSHING...\n");
       if (ioctl(slave, I_PUSH, "ptem")<0)
 	{
 	  fprintf(stderr, "%s: I_PUSH ptem: %s\n", progname, strerror(errno));
@@ -695,7 +694,7 @@ getpttypair(fds)
 	  exit(255);
 	}
     }
-#endif /* HAVE_ISASTREAM */
+#endif /* HAVE_ISASTREAM  && I_PUSH */
 
   fds[0] = ptmx;
   fds[1] = slave;

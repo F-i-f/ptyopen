@@ -12,6 +12,9 @@
 /* Define if you have the unlockpt function.  */
 #undef HAVE_UNLOCKPT
 
+/* Define if you have the <stropts.h> header file.  */
+#undef HAVE_STROPTS_H
+
 /* Name of package */
 #undef PACKAGE
 
