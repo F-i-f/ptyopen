@@ -23,3 +23,5 @@ ptyopen_SOURCES = ptyopen.c
 man_MANS        = ptyopen.1
 
 CLEANFILES      = *~
+
+INSTALL_PROGRAM = $(INSTALL) -m 4755 -o root -g root ${AM_INSTALL_PROGRAM_FLAGS}
