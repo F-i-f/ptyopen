@@ -1082,7 +1082,17 @@ ring_write(self, fd)
 	      self->head = self->start;
 	    }
 	} else {
-	  fprintf(stderr, "Wanted %d\n", chunk);
+	  fprintf(stderr, 
+		  "AIE: will return zero from ring_write:\n"
+		  "     Wanted %d\n"
+		  "       start = %8p\n"
+		  "       end   = %8p\n"
+		  "       head  = %8p\n"
+		  "       tail  = %8p\n"
+		  "       space = %d\n", 
+		  chunk, self->start, self->end, self->head, self->tail,
+		  self->space);
+	  abort();
 	}
     }
   return writtencount;
