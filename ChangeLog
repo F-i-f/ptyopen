@@ -1,5 +1,7 @@
 2000-07-27  Philippe Troin  <phil@fifi.org>
 
+	* Makefile.am (EXTRA_DIST): Added man_MANS.
+
 	* configure.in: Bumped version to 0.81.
 
 	* ptyopen.c (main): Window size must be set even if we're not on a
