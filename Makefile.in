@@ -87,7 +87,7 @@ bin_PROGRAMS = ptyopen
 ptyopen_SOURCES = ptyopen.c
 man_MANS = ptyopen.1
 
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_MANS) debian/[a-z]*
 
 CLEANFILES = *~
 
@@ -330,6 +330,7 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
+	$(mkinstalldirs) $(distdir)/debian
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

@@ -1,5 +1,7 @@
 2000-09-20  Philippe Troin  <phil@fifi.org>
 
+	* Makefile.am (EXTRA_DIST): Added debian dir to dist.
+
 	* configure.in: Autoconf variable for passing to "make install"
 	the right (eventually suid) flags depending on wether or not we
 	use SVr4 ptys.

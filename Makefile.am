@@ -22,7 +22,7 @@ bin_PROGRAMS    = ptyopen
 ptyopen_SOURCES = ptyopen.c
 man_MANS        = ptyopen.1
 
-EXTRA_DIST      = $(man_MANS)
+EXTRA_DIST      = $(man_MANS) debian/[a-z]*
 
 CLEANFILES      = *~
 
