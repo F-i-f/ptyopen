@@ -67,7 +67,10 @@ to be setuid root, the unsecure option allows
 to run without changing the permissions and ownership of the
 pseudo-terminal (and indeed makes
 .B ptyopen
-usable without making it setuid, at the expense of security).
+usable without making it setuid, at the expense of security). This
+option is not available on systems not requiring
+.B ptyopen
+to be setuid root (Linux >= 2.2 with glibc >= 2.1, Solaris, ...)
 
 .TP
 .I -w, --write
@@ -172,12 +175,6 @@ does not present a security risc, your mileage may vary.
 
 .SH SEE ALSO
 .B expect(1), pty(7).
-
-.SH BUGS
-.B ptyopen
-does not take advantage of the
-.B grantpt(3)
-facilities offered by SysV systems or Linux with a recent libc.
 
 .SH AUTHOR
 Written and Copyright (C) 1998-2000 Philippe Troin <phil@fifi.org>.
