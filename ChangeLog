@@ -1,6 +1,22 @@
+2000-09-30  Philippe Troin  <phil@fifi.org>
+
+	* Released 0.92.
+
+	* configure.in: Bumped version to 0.92.
+
+	* Ported to HP-UX 11.
+
+	* ptyopen.c (loop_on): Fixed an ugly race condition where the
+	child status changes between the time it's tested and we get into
+	select(). We use the W.R. Stevens pipe write in signal handler
+	trick.
+	(main): Don't complain on -u on platforms not requiring it.
+	(term_raw): Set VMIN to 1 in termios on current terminal for
+	consistency.
+
 2000-09-26  Philippe Troin  <phil@fifi.org>
 
-	* Release 0.91.
+	* Released 0.91.
 	
 	* configure.in: Bumped version to 0.91.
 

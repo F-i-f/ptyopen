@@ -134,7 +134,7 @@ gid_t 	       	unsecure_gid;
 uid_t 	       	secure_uid;
 gid_t 	       	secure_gid;
 #endif
-volatile int    state_child_exited;
+int             child_exit_pipe          = -1; /* Some invalid fd value */
 const char*    	state_tty_name;
 savedperms_t   	state_tty_perms;
 int 	       	state_saved_stdin_flags  = -1;
@@ -158,6 +158,7 @@ main(argc, argv)
   int parent_exit=0;
   struct sigaction sa;
   struct termios tios;
+  sigset_t sset;
   /**/
 
 #ifndef HAVE_GRANTPT  
@@ -201,8 +202,10 @@ main(argc, argv)
 	{
 	  opt_verbose=1;
 	}
-#ifndef HAVE_GRANTPT
       else if (strcmp("-u", argv[0])==0 || strcmp("--unsecure", argv[0])==0)
+#ifdef HAVE_GRANTPT
+	; /* Eat it and don't complain */
+#else /* ! HAVE_GRANTPT */
 	{
 	  opt_unsecure=1;
 	}
@@ -467,8 +470,15 @@ main(argc, argv)
   if (isatty(0) || opt_geometry_height > 0)
     term_winsize(1);
 
-  /* Prepare to fork: add signal handler and clear the state */
-  state_child_exited = 0;
+  /* Prepare to fork: add signal handler and block sigshld */
+  sigemptyset(&sset);
+  sigaddset(&sset, SIGCHLD);
+  if (sigprocmask(SIG_BLOCK, &sset, NULL)<0)
+    {
+      fprintf(stderr, "%s: sigprocmask(SIG_BLOCK, SIGCHLD): %s\n",
+	      progname, strerror(errno));
+      exit(255);
+    }
   sa.sa_handler = sig_chld_h;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_NOCLDSTOP|SA_RESTART;
@@ -922,6 +932,9 @@ loop_on(fd, ring_size, eof_char)
      size_t ring_size;
      const char eof_char;
 {
+  int chld_pipes[2];
+  sigset_t sset;
+  int child_exited;
   ring_t* in_ring;
   ring_t* out_ring;
   fd_set readable_set;
@@ -934,12 +947,31 @@ loop_on(fd, ring_size, eof_char)
   int eof_stdin;
   /**/
 
+  /* Prepare a pipe for the signal handler, and finally unblock the SIGCHLD */
+  if (pipe(chld_pipes)<0)
+    {
+      fprintf(stderr, "%s: pipe(): %s\n", progname, strerror(errno));
+      exit(255);
+    }
+  child_exit_pipe = chld_pipes[1];
+  child_exited = 0;
+
+  sigemptyset(&sset);
+  sigaddset(&sset, SIGCHLD);
+  if (sigprocmask(SIG_UNBLOCK, &sset, NULL)<0)
+    {
+      fprintf(stderr, "%s: sigprocmask(SIG_UNBLOCK, SIGCHLD): %s\n",
+	      progname, strerror(errno));
+      exit(255);
+    }
+
   /* Prepare the rings */
   in_ring       = ring_construct(ring_size);
   out_ring      = ring_construct(ring_size);
 
   /* Biggest fd */
   maxfd = fd > 2 ? fd+1 : 3;
+  maxfd = chld_pipes[0] >= maxfd ? chld_pipes[0]+1 : maxfd;
 
   /* Save the file descriptor flags for all the fds we'll manipulate */
   if ((state_saved_stdin_flags=fcntl(0, F_GETFL))==-1)
@@ -991,16 +1023,18 @@ loop_on(fd, ring_size, eof_char)
       space = ring_space(in_ring);
       if (space>0 && !eof_stdin)                  
 	FD_SET(0,  &readable_set);
-      if (space<ring_size && ! state_child_exited) 
+      if (space<ring_size && ! child_exited) 
 	FD_SET(fd, &writable_set);
       space = ring_space(out_ring);
       if (space>0 && !eof_pty) 
 	FD_SET(fd, &readable_set);
       if (space<ring_size)     
 	FD_SET(1,  &writable_set);
+      if (!child_exited)
+	FD_SET(chld_pipes[0], &readable_set);
 
       /* If child has exited and the output ring is empty, bye bye */
-      if (state_child_exited && eof_pty && space==ring_size) break;
+      if (child_exited && eof_pty && space==ring_size) break;
       
       activefds = xselect(maxfd, &readable_set, &writable_set, NULL, NULL);
       switch (activefds) 
@@ -1087,6 +1121,20 @@ loop_on(fd, ring_size, eof_char)
 		    }
 		  break;
 		}
+	    }
+	  /* Check for kid death */
+	  if (FD_ISSET(chld_pipes[0], &readable_set))
+	    {
+	      char buf[2];
+	      /**/
+	      /* Child is dead */
+	      if (read(chld_pipes[0], buf, 2) != 1)
+		{
+		  fprintf(stderr, "%s: child death select ack: read(): %s\n",
+			  progname, strerror(errno));
+		  exit(255);
+		}
+	      child_exited = 1;
 	    }
 	}
     }
@@ -1408,7 +1456,7 @@ term_raw(verbose)
       *state_orig_termios = tios;
     }
   tios.c_lflag &= ~(ICANON|ECHO);
-  tios.c_cc[VMIN] = 0;
+  tios.c_cc[VMIN] = 1;
   tios.c_cc[VTIME] = 0;
   if (tcsetattr(0, TCSAFLUSH, &tios)==-1) 
     {
@@ -1509,7 +1557,13 @@ sig_chld_h(sig)
      int sig;
 {
   sig=0;
-  state_child_exited = 1;
+  /* write to a pipe to avoid race condition trick courtesy R.W. Stevens */
+  if (write(child_exit_pipe, "D", 1)!=1)
+    {
+      fprintf(stderr, "%s: in sig_chld_h: write(child_exit_pipe): %s\n",
+	      progname, strerror(errno));
+      exit(255);
+    }
 }
 
 /* all fatal signals handler */

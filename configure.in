@@ -20,7 +20,7 @@
 
 AC_PREREQ(2.0)
 AC_INIT(ptyopen.c)
-AM_INIT_AUTOMAKE(ptyopen, 0.91)
+AM_INIT_AUTOMAKE(ptyopen, 0.92)
 
 ### 1) Checking for system
 
