@@ -22,6 +22,10 @@
 
 #define _GNU_SOURCE
 
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -39,10 +43,6 @@
 #include <grp.h>
 #include <fcntl.h>
 #include <errno.h>
-
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
 
 static char CVSID[] __attribute__((unused))="$Header$";
 
@@ -72,9 +72,9 @@ typedef struct ring_st ring_t;
 
 int 	    main           _P_((int, char*[]));
 #ifdef HAVE_GRANTPT
-#  define getprivs()
-#  define dropprivs()
-#  define ispriv() 1
+#  define getprivs()       do ; while(0)
+#  define dropprivs()      do ; while(0)
+#  define ispriv()         1
 #else /* ! HAVE_GRANTPT */
 void 	    getprivs       _P_((void));
 void 	    dropprivs      _P_((void));
@@ -84,14 +84,13 @@ const char* getpttypair    _P_((int[2]));
 void*       xmalloc        _P_((size_t));
 char*       xstrdup        _P_((const char*));
 #ifdef HAVE_GRANTPT
-#  define saveperms(a,b) 0
+#  define saveperms(a,b)    0
 #  define restoreperms(a,b) 0
-#  define setperms(a,b) 0
 #else /* ! HAVE_GRANTPT */
 int         saveperms      _P_((int,savedperms_t*));
 int         restoreperms   _P_((const char*, savedperms_t*));
-int         setperms       _P_((int, mode_t));
 #endif /* HAVE_GRANTPT */
+int         setperms       _P_((int, mode_t));
 void        loop_on        _P_((int, size_t, const char));
 ring_t*     ring_construct _P_((size_t));
 void        ring_delete    _P_((ring_t*));
@@ -862,6 +861,7 @@ restoreperms(file, perms)
 
   return rv;
 }
+#endif /* ndef HAVE_GRANTPT */
 
 /* Set tty-permissions on a fd */
 int 
@@ -869,6 +869,8 @@ setperms(fd, mode)
      int fd;
      mode_t mode;
 {
+  /* The chowning is only necessary if we're dealing with BSD-style ptys */
+#ifndef HAVE_GRANTPT
   struct group *grbuf;
   gid_t group;
   int rv;
@@ -897,11 +899,11 @@ setperms(fd, mode)
   rv = fchown(fd, secure_uid, group);
   dropprivs();
   if (rv==-1) return -1;
+#endif /* def HAVE_GRANTPT */
 
   /* Chmod it */
   return fchmod(fd, mode);
 }
-#endif /* ndef HAVE_GRANTPT */
 
 int  xselect(int  n,  fd_set  *readfds,  fd_set  *writefds,
 	     fd_set *exceptfds, struct timeval *timeout)
