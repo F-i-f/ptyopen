@@ -1,0 +1,12 @@
+Source: ptyopen
+Section: utils
+Priority: optional
+Maintainer: Philippe Troin <phil@fifi.org>
+Standards-Version: 3.2.1.0
+
+Package: ptyopen
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Control a command in a pseudo-terminal froms stdin/out
+ Ptyopen allows programs expecting to interact with someone seated at
+ a terminal (eg. telnet) to be controlled via stdin and stdout.
