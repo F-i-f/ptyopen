@@ -315,7 +315,11 @@ main(argc, argv)
 	}
       else if (strcmp("-V", argv[0])==0 || strcmp("--version", argv[0])==0)
 	{
-	  printf("%s version " VERSION "\n", progname);
+	  printf("%s " VERSION "\n"
+		 "Copyright (C) 2000 Philippe Troin <phil@fifi.org>\n"
+		 "This is free software; see the source for copying conditions.  There is NO\n"
+		 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
+		 progname);
 	  exit(0);
 	}
       else 

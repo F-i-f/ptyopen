@@ -1,3 +1,7 @@
+2000-10-17  Philippe Troin  <phil@fifi.org>
+
+	* ptyopen.c (main): Includes copyright notice in --version.
+
 2000-09-30  Philippe Troin  <phil@fifi.org>
 
 	* Released 0.92.
