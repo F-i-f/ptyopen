@@ -1,0 +1,6 @@
+2000-07-27  Philippe Troin  <phil@fifi.org>
+
+	* configure.in: Bumped version to 0.81.
+
+	* ptyopen.c (main): Window size must be set even if we're not on a
+	tty but a geometry has been passed.

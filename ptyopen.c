@@ -406,13 +406,12 @@ main(argc, argv)
       exit(255);
     }
 
-  /* Are we on a tty ? If yes, then go into raw mode  on this term 
-     and communicate window size */
+  /* Are we on a tty ? If yes, then go into raw mode  on this term */
   if (isatty(0)) 
-    {
-      term_raw(1);
-      term_winsize(1);
-    }
+    term_raw(1);
+  /* If we're on a tty OR we forced a geometry, set the window size */
+  if (isatty(0) || opt_geometry_height > 0)
+    term_winsize(1);
 
   /* Prepare to fork: add signal handler and clear the state */
   state_child_exited = 0;
@@ -1427,9 +1426,3 @@ sig_winch_h(sig)
       kill(state_child_pid, sig);
     }
 }
-
-/*
-  Local variables:
-  compile-command: "gcc -Wall -Werror -O2 -s -o ptyopen ptyopen.c"
-  End:
-*/
