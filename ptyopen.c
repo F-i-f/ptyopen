@@ -68,14 +68,27 @@ typedef struct ring_st ring_t;
 #endif
 
 int 	    main           _P_((int, char*[]));
+#ifdef HAVE_GRANTPT
+#  define getprivs()
+#  define dropprivs()
+#  define ispriv() 1
+#else /* ! HAVE_GRANTPT */
 void 	    getprivs       _P_((void));
 void 	    dropprivs      _P_((void));
 int  	    ispriv         _P_((void));
+#endif /* HAVE_GRANTPT */
 const char* getpttypair    _P_((int[2]));
 void*       xmalloc        _P_((size_t));
+char*       xstrdup        _P_((const char*));
+#ifdef HAVE_GRANTPT
+#  define saveperms(a,b) 0
+#  define restoreperms(a,b) 0
+#  define setperms(a,b) 0
+#else /* ! HAVE_GRANTPT */
 int         saveperms      _P_((int,savedperms_t*));
 int         restoreperms   _P_((const char*, savedperms_t*));
 int         setperms       _P_((int, mode_t));
+#endif /* HAVE_GRANTPT */
 void        loop_on        _P_((int, size_t, const char));
 ring_t*     ring_construct _P_((size_t));
 void        ring_delete    _P_((ring_t*));
@@ -95,11 +108,16 @@ void        sig_winch_h    _P_((int));
 #undef _P_
 
 /* Configurable options */
+#ifndef HAVE_GRANTPT
 const char *tty_prefix    = "/dev/tty";
 const char *pty_prefix    = "/dev/pty";
 const char *ptty_1st_char = "pqrstuvwxyz";
 const char *ptty_2nd_char = "0123456789abcdef";
 const char *tty_group     = "tty";
+#endif /* HAVE_GRANTPT */
+#ifndef HAVE_GETPT
+const char *devptmx       = "/dev/ptmx";
+#endif /* HAVE_PGETPT */
 #define DEFAULT_RING_SIZE 10240
 #define MAX_RING_SIZE (1<<30)
 
@@ -108,10 +126,12 @@ char* 	       	progname = "<unset>";
 int   	       	opt_verbose;
 unsigned long   opt_geometry_width;
 unsigned long   opt_geometry_height;
+#ifndef HAVE_GRANTPT
 uid_t 	       	unsecure_uid;
 gid_t 	       	unsecure_gid;
 uid_t 	       	secure_uid;
 gid_t 	       	secure_gid;
+#endif
 volatile int    state_child_exited;
 const char*    	state_tty_name;
 savedperms_t   	state_tty_perms;
@@ -137,12 +157,14 @@ main(argc, argv)
   struct sigaction sa;
   struct termios tios;
   /**/
-  
+
+#ifndef HAVE_GRANTPT  
   /* Remember our initial ids */
   unsecure_uid = geteuid();
   unsecure_gid = getegid();
   secure_uid   = getuid();
   secure_gid   = getgid();
+#endif
 
   /* Drop privileges at startup */
   dropprivs();
@@ -177,10 +199,12 @@ main(argc, argv)
 	{
 	  opt_verbose=1;
 	}
+#ifndef HAVE_GRANTPT
       else if (strcmp("-u", argv[0])==0 || strcmp("--unsecure", argv[0])==0)
 	{
 	  opt_unsecure=1;
 	}
+#endif
       else if (strcmp("-w", argv[0])==0 || strcmp("--write", argv[0])==0)
 	{
 	  opt_write=1;
@@ -272,7 +296,9 @@ main(argc, argv)
 		 "  where options can be any of:\n"
 		 "  -v, --verbose     : prints warnings, problems, etc...\n"
 		 "  -V, --version     : reports version of %s\n"
+#ifndef HAVE_GRANTPT
 		 "  -u, --unsecure    : runs unsecurely\n"
+#endif
 		 "  -w, --write:      : allows tty to be write(1)n to\n"
 		 "  -r, --ringsize <s>: use a ring of <s> bytes\n"
 		 "  -g, --geometry <g>: pretends the terminal size is <g> "
@@ -598,6 +624,57 @@ main(argc, argv)
   return parent_exit;
 }
 
+#ifdef HAVE_GRANTPT
+const char*
+getpttypair(fds)
+     int fds[2];
+{
+  int ptmx;
+  int slave;
+  const char* name;
+  /**/
+
+#ifdef HAVE_GETPT
+  if ((ptmx = getpt())<0)
+    {
+      fprintf(stderr, "%s: getpt(): %s\n", progname, sterror(errno));
+      exit(255);
+    }
+#else /* ! HAVE_GETPT */
+  if ((ptmx = open(devptmx, O_RDWR))<0)
+    {
+      fprintf(stderr, "%s: open(\"%s\"): %s\n", progname, 
+	      devptmx, strerror(errno));
+      exit(255);
+    }
+#endif /* HAVE_GETPT */
+
+  if ((slave = grantpt(ptmx))<0)
+    {
+      fprintf(stderr, "%s: grantpt(): %s\n", progname, strerror(errno));
+      exit(255);
+    }
+
+#ifdef HAVE_UNLOCKPT
+  if (unlockpt(ptmx)<0)
+    {
+      fprintf(stderr, "%s: unlockpt(): %s\n", progname, strerror(errno));
+      exit(255);
+    }
+#endif
+
+  if (!(name=ptsname(ptmx)))
+    {
+      fprintf(stderr, "%s: ptsname(): %s\n", progname, strerror(errno));
+      exit(255);
+    }
+
+  fds[0] = ptmx;
+  fds[1] = slave;
+
+  return xstrdup(name);
+}
+#else /* ! HAVE_GRANTPT */
 /* Get a pty/tty pair, return open file descriptors in the arguments
    (a la pipe)
    */
@@ -716,7 +793,9 @@ no_more_ptys:
   fprintf(stderr, "%s: no more ptys available\n", progname);
   exit(255);
 }
+#endif /* HAVE_GRANTPT */
 
+#ifndef HAVE_GRANTPT
 /* Save permissions on a fd for future restoration eventually */  
 int
 saveperms(fd,perms) 
@@ -795,6 +874,7 @@ setperms(fd, mode)
   /* Chmod it */
   return fchmod(fd, mode);
 }
+#endif /* ndef HAVE_GRANTPT */
 
 int  xselect(int  n,  fd_set  *readfds,  fd_set  *writefds,
 	     fd_set *exceptfds, struct timeval *timeout)
@@ -993,6 +1073,7 @@ loop_on(fd, ring_size, eof_char)
   state_saved_stdout_flags=-1;
 }
 
+#ifndef HAVE_GRANTPT
 /* Drop setuid privileges */
 void
 dropprivs() 
@@ -1039,6 +1120,7 @@ ispriv()
 {
   return secure_uid != unsecure_uid || secure_gid != unsecure_gid;
 }
+#endif /* ndef HAVE_GRANTPT */
 
 /* Xmalloc, allocates memory and abort if something goes bad */
 void*
@@ -1053,6 +1135,18 @@ xmalloc(size)
     fprintf(stderr, "%s: not enough memory\n", progname);
     exit(255);
   }
+  return ptr;
+}
+
+/* Xstrdup, makes a copy of a string */
+char*
+xstrdup(const char* s)
+{
+  char* ptr;
+  /**/
+
+  ptr = xmalloc(strlen(s)+1);
+  strcpy(ptr, s);
   return ptr;
 }
 
@@ -1346,7 +1440,7 @@ term_winsize(verbose)
 	    {
 	      if (verbose)
 		{
-		  fprintf(stderr, "%s: TIOCGWINSZ on stdin: %s",
+		  fprintf(stderr, "%s: TIOCGWINSZ on stdin: %s\n",
 			  progname, strerror(errno));
 		  exit(255);
 		}
@@ -1364,7 +1458,7 @@ term_winsize(verbose)
 	{
 	  if (verbose)
 	    {
-	      fprintf(stderr, "%s: TIOCSWINSZ on pty slave: %s",
+	      fprintf(stderr, "%s: TIOCSWINSZ on pty slave: %s\n",
 		      progname, strerror(errno));
 	      exit(255);
 	    }
