@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-static char CVSID[]="$Header$";
+static char CVSID[] __attribute__((unused))="$Header$";
 
 #ifndef NDEBUG
 #include <assert.h>
