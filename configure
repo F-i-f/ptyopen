@@ -1182,6 +1182,13 @@ else
 fi
 done
 
+if test "$ac_cv_func_grantpt" = "yes"
+then
+    exeinstflags="-m 755"
+else
+    exeinstflags="-m 4755 -o root -g root"
+fi
+
 
 ### 9) Check for "system services"
 
@@ -1335,6 +1342,7 @@ s%@MAKEINFO@%$MAKEINFO%g
 s%@SET_MAKE@%$SET_MAKE%g
 s%@CC@%$CC%g
 s%@CPP@%$CPP%g
+s%@exeinstflags@%$exeinstflags%g
 
 CEOF
 EOF

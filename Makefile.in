@@ -81,6 +81,7 @@ CPP = @CPP@
 MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
+exeinstflags = @exeinstflags@
 
 bin_PROGRAMS = ptyopen
 ptyopen_SOURCES = ptyopen.c
@@ -90,7 +91,7 @@ EXTRA_DIST = $(man_MANS)
 
 CLEANFILES = *~
 
-INSTALL_PROGRAM = $(INSTALL) -m 4755 -o root -g root ${AM_INSTALL_PROGRAM_FLAGS}
+INSTALL_PROGRAM = $(INSTALL) @exeinstflags@ ${AM_INSTALL_PROGRAM_FLAGS}
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
@@ -114,8 +115,9 @@ man1dir = $(mandir)/man1
 MANS = $(man_MANS)
 
 NROFF = nroff
-DIST_COMMON =  ./stamp-h.in ChangeLog Makefile.am Makefile.in aclocal.m4 \
-config.h.in configure configure.in install-sh missing mkinstalldirs
+DIST_COMMON =  ./stamp-h.in COPYING ChangeLog Makefile.am Makefile.in \
+aclocal.m4 config.h.in configure configure.in install-sh missing \
+mkinstalldirs
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
