@@ -47,24 +47,24 @@ along with this program.  If not, see [http://www.gnu.org/licenses/].
 ### From a release
 
 Download the [latest release from
-GitHub](https://github.com/F-i-f/ptyopen/releases/download/v0.94/ptyopen-0.94.tar.gz)
-or the [secondary mirror](http://ftp.fifi.org/phil/ptyopen/ptyopen-0.94.tar.gz):
+GitHub](https://github.com/F-i-f/ptyopen/releases/download/v0.95/ptyopen-0.95.tar.gz)
+or the [secondary mirror](http://ftp.fifi.org/phil/ptyopen/ptyopen-0.95.tar.gz):
 
 * [Primary Site (GitHub)](https://github.com/F-i-f/ptyopen/releases/):
 
   * Source:
-	[https://github.com/F-i-f/ptyopen/releases/download/v0.94/ptyopen-0.94.tar.gz](https://github.com/F-i-f/ptyopen/releases/download/v0.94/ptyopen-0.94.tar.gz)
+	[https://github.com/F-i-f/ptyopen/releases/download/v0.95/ptyopen-0.95.tar.gz](https://github.com/F-i-f/ptyopen/releases/download/v0.95/ptyopen-0.95.tar.gz)
 
   * Signature:
-	[https://github.com/F-i-f/ptyopen/releases/download/v0.94/ptyopen-0.94.tar.gz.asc](https://github.com/F-i-f/ptyopen/releases/download/v0.94/ptyopen-0.94.tar.gz.asc)
+	[https://github.com/F-i-f/ptyopen/releases/download/v0.95/ptyopen-0.95.tar.gz.asc](https://github.com/F-i-f/ptyopen/releases/download/v0.95/ptyopen-0.95.tar.gz.asc)
 
 * [Secondary Site](http://ftp.fifi.org/phil/ptyopen/):
 
   * Source:
-	[http://ftp.fifi.org/phil/ptyopen/ptyopen-0.94.tar.gz](http://ftp.fifi.org/phil/ptyopen/ptyopen-0.94.tar.gz)
+	[http://ftp.fifi.org/phil/ptyopen/ptyopen-0.95.tar.gz](http://ftp.fifi.org/phil/ptyopen/ptyopen-0.95.tar.gz)
 
   * Signature:
-	[http://ftp.fifi.org/phil/ptyopen/ptyopen-0.94.tar.gz.asc](http://ftp.fifi.org/phil/ptyopen/ptyopen-0.94.tar.gz.asc)
+	[http://ftp.fifi.org/phil/ptyopen/ptyopen-0.95.tar.gz.asc](http://ftp.fifi.org/phil/ptyopen/ptyopen-0.95.tar.gz.asc)
 
 
 The source code release are signed with the GPG key ID `0x88D51582`,
@@ -77,7 +77,7 @@ mirror](http://ftp.fifi.org/phil/ptyopen/).
 
 When downloading from the GitHub release pages, be careful to download
 the source code from the link named with the full file name
-(_ptyopen-0.94.tar.gz_), and **not** from the links marked _Source code
+(_ptyopen-0.95.tar.gz_), and **not** from the links marked _Source code
 (zip)_ or _Source code (tar.gz)_ as these are repository snapshots
 generated automatically by GitHub and require specialized tools to
 build (see [Building from GitHub](#from-the-github-repository)).
@@ -86,8 +86,8 @@ build (see [Building from GitHub](#from-the-github-repository)).
 After downloading the sources, unpack and build with:
 
 ```shell
-tar xvzf ptyopen-0.94.tar.gz
-cd ptyopen-0.94
+tar xvzf ptyopen-0.95.tar.gz
+cd ptyopen-0.95
 ./configure
 make
 make install

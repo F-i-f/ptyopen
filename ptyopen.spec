@@ -1,11 +1,11 @@
 Name:		ptyopen
-Version:	0.94
-Release:	4%{?dist}
+Version:	0.95
+Release:	1%{?dist}
 Summary:	Runs programs with a pseudo-terminal
 Group:		System Environment/System Tools
-License:	GPL
-URL:		ftp://ftp.fifi.org/phil/%{name}
-Source0:	%{URL}/%{name}-%{version}.tar.gz
+License:	GPLv3
+URL:		https://github.com/F-i-f/%{name}
+Source:		https://github.com/F-i-f/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 BuildRequires:	gcc
 
 %description
@@ -15,16 +15,13 @@ This is handy for scripting programs that require a terminal
 %prep
 %setup -q
 
-
 %build
-export CFLAGS="$CFLAGS -Wno-implicit-int"
-%configure
+%configure --enable-compiler-warnings --docdir="%{_docdir}/%{name}"
 make %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT
-
+%make_install
 
 %files
 %{_bindir}/ptyopen
@@ -32,6 +29,10 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %{_docdir}/%{name}
 
 %changelog
+* Tue Sep 10 2024 Philippe Troin <phil@fifi.org> - 0.95-1
+- Upstream updated to 0.95.
+- Package extra doc files.
+
 * Tue Apr 23 2024 Philippe Troin <phil@fifi.org> - 0.94-4
 - Disable implicit int warnings (configure fails otherwise).
 

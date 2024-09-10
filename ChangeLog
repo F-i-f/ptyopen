@@ -1,5 +1,15 @@
 2024-09-10  Philippe Troin  <phil+github-commits@fifi.org>
 
+	* ptyopen.spec (Version): Bump version to 0.95.
+	(URL, Source): Refer to GitHub.
+	(%build): Don't override CFLAGS, enable compiler warnings,
+	override docdir.
+	(%install): User %make_install.
+
+	* configure.ac (AC_INIT): Bump version to 0.95.
+
+	* NEWS, README.md: Release 0.95.
+
 	* ptyopen.spec (%files): Package %{_docdir} rather than individual
 	files through %doc. Files are already installed.
 

@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-AC_INIT([ptyopen],[0.94])
+AC_INIT([ptyopen],[0.95])
 AC_CONFIG_AUX_DIR([config.aux])
 FI_PROJECT()
 

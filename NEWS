@@ -1,9 +1,17 @@
 NEWS file for ptyopen -*- outline -*-
 
+* Changes in 0.95.
+
+** Updated autoconf/automake build system.
+** Modernized C (remove K&R prototypes).
+** Show git revision in --version.
+** Compiles cleanly with gcc 14.
+** Provide HTML and PDF versions of the manpage.
+** Provide RPM spec file.
+
 * Changes in 0.94.
 
 ** Fixed a controlling tty problem on SysV systems.
 
 Earlier releases of ptyopen did not set the controlling terminal
 correctly on SysV systems (lacking a TIOCSCTTY ioctl).
-
