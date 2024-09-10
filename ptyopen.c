@@ -1,7 +1,7 @@
 /*
   ptyopen - runs a program on a fake terminal
   ptyopen.c - main program
-  Copyright (C) 1999-2001, 2024 Philippe Troin <phil@fifi.org>
+  Copyright (C) 1999-2001, 2024 Philippe Troin <phil+github-commits@fifi.org>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -313,7 +313,7 @@ main(int argc, char *argv[])
 		 " (git: " GIT_REVISION ")"
 #endif
 		 "\n"
-		 "Copyright (C) 2000 Philippe Troin <phil@fifi.org>\n"
+		 "Copyright (C) 2000 Philippe Troin <phil+github-commits@fifi.org>\n"
 		 "This is free software; see the source for copying conditions.  There is NO\n"
 		 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
 		 progname);

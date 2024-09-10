@@ -1,4 +1,4 @@
-2024-09-10  Philippe Troin  <phil@fifi.org>
+2024-09-10  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* ptyopen.c (main): Show GIT_REVISION in "ptyopen --version".
 
@@ -42,7 +42,7 @@
 
 	* configure.in: Rename to configure.ac.
 
-2001-11-16  Philippe Troin  <phil@fifi.org>
+2001-11-16  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* Released 0.94.
 
@@ -57,7 +57,7 @@
 	(main): Do reopen on slave tty SysVish systems which do NOT have
 	TIOCSCTTY.
 
-2001-07-29  Philippe Troin  <phil@fifi.org>
+2001-07-29  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* Released 0.93.
 
@@ -68,13 +68,13 @@
 	* Makefile.am (EXTRA_DIST): Removed Debian stuff.
 	(EXTRA_DIST): Added an autoboot script.
 
-2000-10-17  Philippe Troin  <phil@fifi.org>
+2000-10-17  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* ptyopen.1: Added copyright notice in manpage and fixed typos.
 
 	* ptyopen.c (main): Includes copyright notice in --version.
 
-2000-09-30, 24  Philippe Troin  <phil@fifi.org>
+2000-09-30, 24  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* Released 0.92.
 
@@ -90,7 +90,7 @@
 	(term_raw): Set VMIN to 1 in termios on current terminal for
 	consistency.
 
-2000-09-26  Philippe Troin  <phil@fifi.org>
+2000-09-26  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* Released 0.91.
 
@@ -100,7 +100,7 @@
 
 	* configure.in: Added check for strsignal.
 
-2000-09-20  Philippe Troin  <phil@fifi.org>
+2000-09-20  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* Released 0.90.
 
@@ -126,7 +126,7 @@
 
 	* configure.in: Auto-detect SVr4 ptys.
 
-2000-07-27  Philippe Troin  <phil@fifi.org>
+2000-07-27  Philippe Troin  <phil+github-commits@fifi.org>
 
 	* Makefile.am (EXTRA_DIST): Added man_MANS.
 
