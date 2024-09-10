@@ -1,5 +1,7 @@
 2024-09-10  Philippe Troin  <phil+github-commits@fifi.org>
 
+	* Makefile.am (EXTRA_DIST): Ship ptyopen.spec.
+
 	* README.md: Include submodules when cloning from github.
 
 	* ptyopen.spec (Version): Bump version to 0.95.
