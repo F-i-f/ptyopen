@@ -42,6 +42,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#define UNUSED(x) ((void)(x))
+
 #ifndef NDEBUG
 #include <assert.h>
 #define RING_CHECK(ring) ring_check(ring)
@@ -68,8 +70,8 @@ typedef struct ring_st ring_t;
 
 int	    main           _P_((int, char*[]));
 #ifdef HAVE_GRANTPT
-#  define getprivs()       do ; while(0)
-#  define dropprivs()      do ; while(0)
+#  define getprivs()       do {} while(0)
+#  define dropprivs()      do {} while(0)
 #  define ispriv()         1
 #else /* ! HAVE_GRANTPT */
 void	    getprivs       _P_((void));
@@ -1586,7 +1588,7 @@ void
 sig_chld_h(sig)
      int sig;
 {
-  sig=0;
+  UNUSED(sig);
   /* write to a pipe to avoid race condition trick courtesy R.W. Stevens */
   if (write(child_exit_pipe, "D", 1)!=1)
     {
@@ -1651,7 +1653,7 @@ void
 sig_cont_h(sig)
      int sig;
 {
-  if (0) sig=0;
+  UNUSED(sig);
   if (term_raw(0)==-1) _exit(255);
   kill(state_child_pid, SIGWINCH);
 }

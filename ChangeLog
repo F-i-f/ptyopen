@@ -1,5 +1,10 @@
 2024-09-10  Philippe Troin  <phil@fifi.org>
 
+	* ptyopen.c (UNUSED): Define.
+	(getprivs, dropprivs): Pacify gcc, prefer "do {} while" over "do ;
+	while".
+	(sig_chld_h, sig_cont_h): Mark sig UNUSED.
+
 	* README, AUTHORS: Create.
 
 	* autoboot, config.h.in: Delete.
