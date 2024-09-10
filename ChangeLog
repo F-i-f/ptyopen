@@ -4,6 +4,13 @@
 	(getprivs, dropprivs): Pacify gcc, prefer "do {} while" over "do ;
 	while".
 	(sig_chld_h, sig_cont_h): Mark sig UNUSED.
+	(main, getpttypair, saveperms, restoreperms, setperms, loop_on)
+	(dropprivs, getprivs, ispriv, xmalloc, ring_check)
+	(ring_construct, ring_delete, ring_space, ring_read, ring_write)
+	(ring_push_char, cleanup, term_raw, term_restore, term_winsize)
+	(sig_chld_h, sig_fatal_h, sig_tstp_h, sig_cont_h, sig_winch_h):
+	Use ANSI prototypes in function definition.
+	(_P_): Remove.
 
 	* README, AUTHORS: Create.
 

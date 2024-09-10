@@ -62,52 +62,46 @@ struct ring_st;
 typedef struct ring_st ring_t;
 
 /* Prototypes */
-#ifdef __STDC__
-# define _P_(a) a
-#else
-# define _P_(a) ()
-#endif
-
-int	    main           _P_((int, char*[]));
+int	    main           (int, char*[]);
 #ifdef HAVE_GRANTPT
 #  define getprivs()       do {} while(0)
 #  define dropprivs()      do {} while(0)
 #  define ispriv()         1
 #else /* ! HAVE_GRANTPT */
-void	    getprivs       _P_((void));
-void	    dropprivs      _P_((void));
-int	    ispriv         _P_((void));
+void	    getprivs       (void);
+void	    dropprivs      (void);
+int	    ispriv         (void);
 #endif /* HAVE_GRANTPT */
-const char* getpttypair    _P_((int[2]));
-void*       xmalloc        _P_((size_t));
-char*       xstrdup        _P_((const char*));
+const char* getpttypair    (int[2]);
+void*       xmalloc        (size_t);
+char*       xstrdup        (const char*);
 #ifdef HAVE_GRANTPT
 #  define saveperms(a,b)    0
 #  define restoreperms(a,b) 0
 #else /* ! HAVE_GRANTPT */
-int         saveperms      _P_((int,savedperms_t*));
-int         restoreperms   _P_((const char*, savedperms_t*));
+int         saveperms      (int,savedperms_t*);
+int         restoreperms   (const char*, savedperms_t*);
 #endif /* HAVE_GRANTPT */
-int         setperms       _P_((int, mode_t));
-void        loop_on        _P_((int, size_t, const char));
+int         setperms       (int, mode_t);
+void        loop_on        (int, size_t, const char);
 #ifndef NDEBUG
-void        ring_check     _P_((ring_t*));
+void        ring_check     (ring_t*);
 #endif /* NDEBUG */
-ring_t*     ring_construct _P_((size_t));
-void        ring_delete    _P_((ring_t*));
-size_t      ring_space     _P_((ring_t*));
-int         ring_read      _P_((ring_t*, int));
-int         ring_write     _P_((ring_t*, int));
-int         ring_push_char _P_((ring_t*, const char));
-int         term_raw       _P_((int));
-int         term_restore   _P_((int));
-int         term_winsize   _P_((int));
-void        cleanup        _P_((void));
-void        sig_chld_h     _P_((int));
-void        sig_fatal_h    _P_((int));
-void        sig_tstp_h     _P_((int));
-void        sig_cont_h     _P_((int));
-void        sig_winch_h    _P_((int));
+ring_t*     ring_construct (size_t);
+void        ring_delete    (ring_t*);
+size_t      ring_space     (ring_t*);
+int         ring_read      (ring_t*, int);
+int         ring_write     (ring_t*, int);
+int         ring_push_char (ring_t*, const char);
+int         term_raw       (int);
+int         term_restore   (int);
+int         term_winsize   (int);
+void        cleanup        (void);
+void        sig_chld_h     (int);
+void        sig_fatal_h    (int);
+void        sig_tstp_h     (int);
+void        sig_cont_h     (int);
+void        sig_winch_h    (int);
 #undef _P_
 
 /* Configurable options */
@@ -146,9 +140,7 @@ int             state_pty_fd;
 
 /* Main function */
 int
-main(argc, argv)
-     int argc;
-     char *argv[];
+main(int argc, char *argv[])
 {
   char *cptr;
   int pty_pair[2];
@@ -672,8 +664,7 @@ main(argc, argv)
 
 #ifdef HAVE_GRANTPT
 const char*
-getpttypair(fds)
-     int fds[2];
+getpttypair(int fds[2])
 {
   int ptmx;
   int slave;
@@ -749,8 +740,7 @@ getpttypair(fds)
    (a la pipe)
    */
 const char*
-getpttypair(fds)
-     int fds[2];
+getpttypair(int fds[2])
 {
   char *pty_string;
   char *tty_string;
@@ -868,9 +858,7 @@ no_more_ptys:
 #ifndef HAVE_GRANTPT
 /* Save permissions on a fd for future restoration eventually */
 int
-saveperms(fd,perms)
-     int fd;
-     savedperms_t* perms;
+saveperms(int fd,savedperms_t* perms)
 {
   struct stat statbuf;
 
@@ -890,9 +878,7 @@ saveperms(fd,perms)
 
 /* Restore permissions on a fd */
 int
-restoreperms(file, perms)
-     const char* file;
-     savedperms_t* perms;
+restoreperms(const char* file,savedperms_t* perms)
 {
   int rv;
 
@@ -909,9 +895,7 @@ restoreperms(file, perms)
 
 /* Set tty-permissions on a fd */
 int
-setperms(fd, mode)
-     int fd;
-     mode_t mode;
+setperms(int fd,mode_t mode)
 {
   /* The chowning is only necessary if we're dealing with BSD-style ptys */
 #ifndef HAVE_GRANTPT
@@ -949,18 +933,16 @@ setperms(fd, mode)
   return fchmod(fd, mode);
 }
 
-int  xselect(int  n,  fd_set  *readfds,  fd_set  *writefds,
-	     fd_set *exceptfds, struct timeval *timeout)
+int
+xselect(int n, fd_set *readfds, fd_set *writefds,
+	fd_set *exceptfds, struct timeval *timeout)
 {
   return select(n, readfds, writefds, exceptfds, timeout);
 }
 
 /* Master loop */
 void
-loop_on(fd, ring_size, eof_char)
-     int fd;
-     size_t ring_size;
-     const char eof_char;
+loop_on(int fd, size_t ring_size, const char eof_char)
 {
   int chld_pipes[2];
   sigset_t sset;
@@ -1187,7 +1169,7 @@ loop_on(fd, ring_size, eof_char)
 #ifndef HAVE_GRANTPT
 /* Drop setuid privileges */
 void
-dropprivs()
+dropprivs(void)
 {
   if (ispriv()) {
     if (seteuid(secure_uid)==-1)
@@ -1207,7 +1189,7 @@ dropprivs()
 
 /* Get setuid privileges */
 void
-getprivs()
+getprivs(void)
 {
   if (ispriv()) {
     if (seteuid(unsecure_uid)==-1)
@@ -1227,7 +1209,7 @@ getprivs()
 
 /* Are we a privileged (setuid) process */
 int
-ispriv()
+ispriv(void)
 {
   return secure_uid != unsecure_uid || secure_gid != unsecure_gid;
 }
@@ -1235,8 +1217,7 @@ ispriv()
 
 /* Xmalloc, allocates memory and abort if something goes bad */
 void*
-xmalloc(size)
-     size_t size;
+xmalloc(size_t size)
 {
   void* ptr;
   /**/
@@ -1274,8 +1255,7 @@ struct ring_st {
 /* Ring check */
 #ifndef NDEBUG
 void
-ring_check(self)
-     ring_t *self;
+ring_check(ring_t *self)
 {
   ssize_t size = self->end - self->start;
   assert(size > 0);
@@ -1292,8 +1272,7 @@ ring_check(self)
 
 /* Ring allocation */
 ring_t*
-ring_construct(size)
-     size_t size;
+ring_construct(size_t size)
 {
   ring_t* self;
   self  = xmalloc(sizeof(ring_t));
@@ -1308,8 +1287,7 @@ ring_construct(size)
 
 /* Ring deallocation */
 void
-ring_delete(self)
-     ring_t *self;
+ring_delete(ring_t *self)
 {
   RING_CHECK(self);
   free(self->start);
@@ -1318,8 +1296,7 @@ ring_delete(self)
 
 /* Return free space in ring */
 size_t
-ring_space(self)
-     ring_t *self;
+ring_space(ring_t *self)
 {
   RING_CHECK(self);
   return self->space;
@@ -1327,9 +1304,7 @@ ring_space(self)
 
 /* Read the biggest possible block in a ring from a fd */
 int
-ring_read(self, fd)
-     ring_t *self;
-     int fd;
+ring_read(ring_t *self, int fd)
 {
   int readcount=0;
   /**/
@@ -1369,9 +1344,7 @@ ring_read(self, fd)
 
 /* Write the biggest possible block in a ring to a fd */
 int
-ring_write(self, fd)
-     ring_t *self;
-     int fd;
+ring_write(ring_t *self, int fd)
 {
   int writtencount=0;
   /**/
@@ -1410,9 +1383,7 @@ ring_write(self, fd)
 
 /* Push a characted in a ring */
 int
-ring_push_char(self, c)
-     ring_t* self;
-     const char c;
+ring_push_char(ring_t* self, const char c)
 {
   int writtencount=0;
   /**/
@@ -1436,7 +1407,7 @@ ring_push_char(self, c)
 
 /* Cleanup everything */
 void
-cleanup()
+cleanup(void)
 {
   /* Restore our state */
   if (state_saved_stdin_flags!=-1)
@@ -1459,8 +1430,7 @@ cleanup()
 
 /* Pass into terminal raw mode and save the old mode */
 int
-term_raw(verbose)
-     int verbose;
+term_raw(int verbose)
 {
   struct termios tios;
   sigset_t blockedset;
@@ -1508,8 +1478,7 @@ term_raw(verbose)
 
 /* Restore terminal state */
 int
-term_restore(verbose)
-     int verbose;
+term_restore(int verbose)
 {
   if (state_orig_termios!=NULL)
     {
@@ -1543,8 +1512,7 @@ term_restore(verbose)
 
 /* Communicate window size to child */
 int
-term_winsize(verbose)
-     int verbose;
+term_winsize(int verbose)
 {
   if (state_pty_fd)
     {
@@ -1585,8 +1553,7 @@ term_winsize(verbose)
 
 /* SIGCHLD handler */
 void
-sig_chld_h(sig)
-     int sig;
+sig_chld_h(int sig)
 {
   UNUSED(sig);
   /* write to a pipe to avoid race condition trick courtesy R.W. Stevens */
@@ -1600,8 +1567,7 @@ sig_chld_h(sig)
 
 /* all fatal signals handler */
 void
-sig_fatal_h(sig)
-     int sig;
+sig_fatal_h(int sig)
 {
   struct sigaction sa;
   /**/
@@ -1621,8 +1587,7 @@ sig_fatal_h(sig)
 
 /* Terminal stop */
 void
-sig_tstp_h(sig)
-     int sig;
+sig_tstp_h(int sig)
 {
   struct sigaction sa;
   struct sigaction oldsa;
@@ -1650,8 +1615,7 @@ sig_tstp_h(sig)
 
 /* Continuation */
 void
-sig_cont_h(sig)
-     int sig;
+sig_cont_h(int sig)
 {
   UNUSED(sig);
   if (term_raw(0)==-1) _exit(255);
@@ -1660,8 +1624,7 @@ sig_cont_h(sig)
 
 /* Window size change */
 void
-sig_winch_h(sig)
-     int sig;
+sig_winch_h(int sig)
 {
   if (term_winsize(0)!=-1)
     {
