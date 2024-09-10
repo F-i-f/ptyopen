@@ -22,6 +22,11 @@ bin_PROGRAMS         = ptyopen
 ptyopen_SOURCES      = ptyopen.c
 dist_man_MANS        = ptyopen.1
 
+dist_doc_DATA	     = ChangeLog \
+		       README \
+		       README.md \
+		       NEWS
+
 EXTRA_DIST	     = ptyopen.1.html \
 		       ptyopen.1.pdf
 

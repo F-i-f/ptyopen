@@ -27,9 +27,9 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 
 %files
-%doc ChangeLog NEWS
 %{_bindir}/ptyopen
 %{_mandir}/man1/ptyopen.1.gz
+%{_docdir}/%{name}
 
 %changelog
 * Tue Apr 23 2024 Philippe Troin <phil@fifi.org> - 0.94-4

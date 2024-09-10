@@ -1,5 +1,10 @@
 2024-09-10  Philippe Troin  <phil+github-commits@fifi.org>
 
+	* ptyopen.spec (%files): Package %{_docdir} rather than individual
+	files through %doc. Files are already installed.
+
+	* Makefile.am (dist_doc_DATA): Add READMEs, changelog and news.
+
 	* README.md: Create.
 
 	* ptyopen.spec: Import from SRPM.
