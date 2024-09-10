@@ -1,5 +1,9 @@
 2024-09-10  Philippe Troin  <phil@fifi.org>
 
+	* ptyopen.c (main): Show GIT_REVISION in "ptyopen --version".
+
+	* configure.ac (FI_GIT_REVISION): Add.
+
 	* .gitignore: Create.
 
 	* ptyopen.c (UNUSED): Define.

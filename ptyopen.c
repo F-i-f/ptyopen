@@ -308,7 +308,11 @@ main(int argc, char *argv[])
 	}
       else if (strcmp("-V", argv[0])==0 || strcmp("--version", argv[0])==0)
 	{
-	  printf("%s " VERSION "\n"
+	  printf("%s " VERSION
+#ifdef GIT_REVISION
+		 " (git: " GIT_REVISION ")"
+#endif
+		 "\n"
 		 "Copyright (C) 2000 Philippe Troin <phil@fifi.org>\n"
 		 "This is free software; see the source for copying conditions.  There is NO\n"
 		 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",

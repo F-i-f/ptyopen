@@ -31,6 +31,8 @@ AC_PROG_CC
 FI_COMPILER_WARNINGS
 AC_PROG_CPP
 
+FI_GIT_REVISION
+
 ### 3) Checking for libraries
 ### 4) Checking for header files
 AC_CHECK_HEADERS([stropts.h])
