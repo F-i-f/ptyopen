@@ -1,5 +1,9 @@
 2024-09-10  Philippe Troin  <phil+github-commits@fifi.org>
 
+	* ptyopen.1: Update copyright.
+
+	* ptyopen.c (main): Update copyright.
+
 	* ptyopen.c (main): Show GIT_REVISION in "ptyopen --version".
 
 	* configure.ac (FI_GIT_REVISION): Add.

@@ -313,7 +313,7 @@ main(int argc, char *argv[])
 		 " (git: " GIT_REVISION ")"
 #endif
 		 "\n"
-		 "Copyright (C) 2000 Philippe Troin <phil+github-commits@fifi.org>\n"
+		 "Copyright (C) 2000-2024 Philippe Troin <phil+github-commits@fifi.org>\n"
 		 "This is free software; see the source for copying conditions.  There is NO\n"
 		 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
 		 progname);
