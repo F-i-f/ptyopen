@@ -103,10 +103,10 @@ rpmbuild -ba SPECS/ptyopen.spec
 
 ### From the GitHub repository
 
-Clone the [repository](https://github.com/F-i-f/ptyopen.git):
+Clone the [repository](https://github.com/F-i-f/ptyopen.git), including submodules:
 
 ```shell
-git clone https://github.com/F-i-f/ptyopen.git
+git clone --recurse-submodules https://github.com/F-i-f/ptyopen.git
 cd ptyopen
 autoreconf -i
 ./configure

@@ -1,5 +1,7 @@
 2024-09-10  Philippe Troin  <phil+github-commits@fifi.org>
 
+	* README.md: Include submodules when cloning from github.
+
 	* ptyopen.spec (Version): Bump version to 0.95.
 	(URL, Source): Refer to GitHub.
 	(%build): Don't override CFLAGS, enable compiler warnings,
