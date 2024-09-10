@@ -1,5 +1,12 @@
 2024-09-10  Philippe Troin  <phil+github-commits@fifi.org>
 
+	* Makefile.am (EXTRA_DIR): Add ptyopen.1.pdf/html.
+
+	* configure.ac (FI_FORMAT_MAN): Provide pre-build PDF and HTML
+	versions of the manpage.
+
+	* ptyopen.1.html, ptyopen.1.pdf: Add.
+
 	* ptyopen.1: Update copyright.
 
 	* ptyopen.c (main): Update copyright.

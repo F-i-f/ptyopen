@@ -1,0 +1,243 @@
+<!-- Creator     : groff version 1.23.0 -->
+<!-- CreationDate: Tue Sep 10 14:31:14 2024 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>PTYOPEN</title>
+
+</head>
+<body>
+
+<h1 align="center">PTYOPEN</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#NOTES">NOTES</a><br>
+<a href="#SIGNALS">SIGNALS</a><br>
+<a href="#BUFFERS">BUFFERS</a><br>
+<a href="#END OF FILE">END OF FILE</a><br>
+<a href="#EXIT CODE">EXIT CODE</a><br>
+<a href="#SECURITY">SECURITY</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#HISTORY">HISTORY</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:9%; margin-top: 1em">ptyopen &minus;
+Runs a command in a pseudo-terminal and redirects it to
+stdin/stdout</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:9%; margin-top: 1em"><b>ptyopen</b>
+[-v] [--verbose] [-V] [--version] [-u] [--unsecure] [-w]
+[--write] [-r <i>size</i> ] [ --ringsize <i>size</i> ] [-g
+<i>geometry</i> ] [--geometry <i>geometry</i> ] [-h]
+[--help] <i>command [arguments...]</i></p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:9%; margin-top: 1em"><i><b>ptyopen</b></i>
+creates a pseudo-terminal and runs the specified
+<i>command</i> with its <i>arguments</i> in it. All tty
+output of the slave <i>command</i> is redirected to
+<b>ptyopen&rsquo;s</b> stdout. All data fed into
+<b>ptyopen&rsquo;s</b> stdin is presented to the slave
+<i>command</i> as terminal input.</p>
+
+<p style="margin-left:9%; margin-top: 1em"><b>ptyopen</b>
+is useful to control programmatically commands that use the
+terminal directly (typically by opening /dev/tty), like
+<b>dump(1)</b> or <b>telnet(1)</b> for example.</p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:9%; margin-top: 1em"><i>-v,
+--verbose</i></p>
+
+<p style="margin-left:18%;">Runs verbosely. Namely,
+<b>ptyopen</b> will report &quot;benign&quot; errors while
+handling terminal capabilities and window sizing.
+<b>ptyopen</b> will also report verbosely the exit code of
+<i>command.</i></p>
+
+<p style="margin-left:9%;"><i>-V, --version</i></p>
+
+<p style="margin-left:18%;">Prints <b>ptyopen&rsquo;s</b>
+version.</p>
+
+<p style="margin-left:9%;"><i>-u, --unsecure</i></p>
+
+<p style="margin-left:18%;">If running under a system which
+requires <b>ptyopen</b> to be setuid root, the unsecure
+option allows <b>ptyopen</b> to run without changing the
+permissions and ownership of the pseudo-terminal (and indeed
+makes <b>ptyopen</b> usable without making it setuid, at the
+expense of security). This option is not available on
+systems not requiring <b>ptyopen</b> to be setuid root
+(Linux &gt;= 2.2 with glibc &gt;= 2.1, Solaris, ...)</p>
+
+<p style="margin-left:9%;"><i>-w, --write</i></p>
+
+<p style="margin-left:18%;">Allows write permissions to the
+pseudo-terminal. This is probably useless, unless
+you&rsquo;re running some interactive shell under
+<b>ptyopen.</b></p>
+
+<p style="margin-left:9%;"><i>-r, --ringsize
+&lt;size&gt;</i></p>
+
+<p style="margin-left:18%;">Takes an argument, the number
+of bytes of <b>ptyopen&rsquo;s</b> input and output buffers.
+When writing to <b>ptyopen&rsquo;s</b> stdin, <b>ptyopen</b>
+buffers some amount of data. Similarly, when the
+<i>program</i> writes to the terminal, <b>ptyopen</b>
+buffers the output before sending it to stdout. One might
+want to change the default buffer size for obscure
+reasons.</p>
+
+<p style="margin-left:9%;"><i>-g, --geometry
+&lt;geometry&gt;</i></p>
+
+<p style="margin-left:18%;">Makes <i>program</i> believe it
+runs in a terminal whose size is given by
+<i>&lt;geometry&gt;.</i> For example 80x25 or 132x50.</p>
+
+<p style="margin-left:9%;"><i>-h, --help</i></p>
+
+<p style="margin-left:18%;">Prints a summary of these
+options.</p>
+
+<h2>NOTES
+<a name="NOTES"></a>
+</h2>
+
+
+<h3>SIGNALS
+<a name="SIGNALS"></a>
+</h3>
+
+
+<p style="margin-left:9%; margin-top: 1em"><b>ptyopen</b>
+traps almost all common deadly signals so that the
+pseudo-terminal permissions are restored correctly.</p>
+
+<p style="margin-left:9%; margin-top: 1em"><b>ptyopen</b>
+also handles SIGTSTP and SIGCONT so that the slave
+<i>command</i> gets stopped and restarted when
+<b>ptyopen&rsquo;s</b> state changes.</p>
+
+<p style="margin-left:9%; margin-top: 1em">Finally, window
+size changes get communicated correctly through SIGWINCH,
+unless the <i>-g</i> or <i>--geometry</i> (forced geometry)
+options are used.</p>
+
+<h3>BUFFERS
+<a name="BUFFERS"></a>
+</h3>
+
+
+<p style="margin-left:9%; margin-top: 1em"><b>ptyopen</b>
+uses some internal buffers, which can be resized with the
+<i>-r</i> or <i>--ringsize</i> options. These buffers are in
+used in addition to the buffers used by the pseudo-terminal
+driver, and eventually the pipes and sockets connected to
+<b>ptyopen&rsquo;s</b> stdin and stdout.</p>
+
+<h3>END OF FILE
+<a name="END OF FILE"></a>
+</h3>
+
+
+<p style="margin-left:9%; margin-top: 1em">If
+<b>ptyopen&rsquo;s</b> stdin is closed, then an EOF
+character (as determined by the pseudo-terminal&rsquo;s
+capabilities) is sent to the terminal. Whether or not the
+slave <i>command</i> will take action on this EOF character
+depends on the <i>command</i> itself, and not
+<b>ptyopen.</b></p>
+
+<h3>EXIT CODE
+<a name="EXIT CODE"></a>
+</h3>
+
+
+<p style="margin-left:9%; margin-top: 1em"><b>ptyopen</b>
+exits with the exit code of the slave <i>command</i> unless
+it encounters some error. In that case it will exit with
+255.</p>
+
+<h2>SECURITY
+<a name="SECURITY"></a>
+</h2>
+
+
+<p style="margin-left:9%; margin-top: 1em">On BSD systems,
+<b>ptyopen</b> needs to be setuid root so that the
+pseudo-terminal&rsquo;s permissions and ownership can be
+changed. <b>ptyopen</b> will refuse to run without being
+setuid root (unless the <i>-u</i> or <i>--unsecure</i>
+options are used).</p>
+
+<p style="margin-left:9%; margin-top: 1em">Although great
+care has been taken to ensure that <b>ptyopen</b> does not
+present a security risk, your mileage may vary.</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+<p style="margin-left:9%; margin-top: 1em"><b>expect(1),
+pty(7).</b></p>
+
+<h2>AUTHOR
+<a name="AUTHOR"></a>
+</h2>
+
+
+<p style="margin-left:9%; margin-top: 1em">Written and
+Copyright (C) 1998-2024 Philippe Troin
+&lt;phil+github-commits@fifi.org&gt;. THIS PROGRAM COMES
+WITH ABSOLUTELY NO WARRANTY.</p>
+
+<h2>HISTORY
+<a name="HISTORY"></a>
+</h2>
+
+
+<p style="margin-left:9%; margin-top: 1em">This program was
+written as a way to control <b>dump(8)</b> from a backup
+script.</p>
+<hr>
+</body>
+</html>

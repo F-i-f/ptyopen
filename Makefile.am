@@ -22,6 +22,9 @@ bin_PROGRAMS         = ptyopen
 ptyopen_SOURCES      = ptyopen.c
 dist_man_MANS        = ptyopen.1
 
+EXTRA_DIST	     = ptyopen.1.html \
+		       ptyopen.1.pdf
+
 INSTALL_PROGRAM = $(INSTALL) @exeinstflags@ ${AM_INSTALL_PROGRAM_FLAGS}
 
 @FI_AUTOMAKE@
