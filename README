@@ -1,0 +1,12 @@
+ptyopen - runs a program on a fake terminal
+
+Documentation overview:
+
+* ChangeLog      - Detailed change list
+* INSTALL        - Generic install instructions
+* NEWS           - Release notes
+* README         - This file
+* README.md      - Detailed help file
+* ptyopen.1      - Manual page
+* ptyopen.1.html - Manual page HTML hard copy
+* ptyopen.1.pdf  - Manual page PDF hard copy

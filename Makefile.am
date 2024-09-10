@@ -16,23 +16,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+ACLOCAL_AMFLAGS      = -I m4
+
 bin_PROGRAMS         = ptyopen
 ptyopen_SOURCES      = ptyopen.c
-man_MANS             = ptyopen.1
-
-EXTRA_DIST           = $(man_MANS) autoboot
-
-CONFIG_FILES         = $(srcdir)/install-sh \
-		       $(srcdir)/missing \
-		       $(srcdir)/mkinstalldirs
-
-CLEANFILES           = *~ $(srcdir)/*~ *.da *.bb *.bbg *.gcov
-
-MAINTAINERCLEANFILES = $(CONFIG_FILES) \
-		       $(srcdir)/Makefile.in \
-		       $(srcdir)/configure \
-		       $(srcdir)/aclocal.m4 \
-		       $(srcdir)/stamp.h \
-		       $(srcdir)/stamp-h.in
+dist_man_MANS        = ptyopen.1
 
 INSTALL_PROGRAM = $(INSTALL) @exeinstflags@ ${AM_INSTALL_PROGRAM_FLAGS}
+
+@FI_AUTOMAKE@

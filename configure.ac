@@ -16,25 +16,30 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-AC_PREREQ(2.0)
-AC_INIT(ptyopen.c)
-AM_INIT_AUTOMAKE(ptyopen, 0.94)
+AC_INIT([ptyopen],[0.94])
+AC_CONFIG_AUX_DIR([config.aux])
+FI_PROJECT()
+
+# Get started
+AC_CONFIG_SRCDIR([ptyopen.c])
+AC_LANG([C])
 
 ### 1) Checking for system
 
 ### 2) Checking for programs
 AC_PROG_CC
+FI_COMPILER_WARNINGS
 AC_PROG_CPP
 
 ### 3) Checking for libraries
 ### 4) Checking for header files
-AC_CHECK_HEADERS(stropts.h)
+AC_CHECK_HEADERS([stropts.h])
 
 ### 5) Checking for typedefs
 ### 6) Checking for structures
 ### 7) Checking for compiler characteristics
 ### 8) Checking for library functions
-AC_CHECK_FUNCS(strsignal getpt grantpt unlockpt isastream)
+AC_CHECK_FUNCS([strsignal getpt grantpt unlockpt isastream])
 if test "$ac_cv_func_grantpt" = "yes"
 then
     exeinstflags="-m 755"
@@ -46,8 +51,10 @@ AC_SUBST(exeinstflags)
 ### 9) Check for "system services"
 
 ### END
-AM_CONFIG_HEADER(config.h)
-AC_OUTPUT(Makefile)
+
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
 
 # Local variables:
 # mode: sh

@@ -1,3 +1,29 @@
+2024-09-10  Philippe Troin  <phil@fifi.org>
+
+	* README, AUTHORS: Create.
+
+	* autoboot, config.h.in: Delete.
+
+	* Makefile.am (ACLOCAL_AMFLAGS): Add.
+	(man_MANS): Rename to dist_man_MANS.
+	(EXTRA_DIST, CONFIG_FILES, CLEANFILES, MAINTAINERCLEANFILES):
+	Remove, now handled by FI_PROJECT.
+	(@FI_AUTOMAKE@): Add marker.
+
+	* configure.ac (AC_INIT): Modernize.
+	(AC_CONFIG_AUX_DIR): Put automake generated file in subdirectory.
+	(FI_PROJECT): Use fi-autoconf-macros' FI_PROJECT.
+	(AC_CONFIG_SRCDIR, AC_LANG): Add.
+	(AC_CHECK_HEADERS, AC_CHECK_FUNCS): Quote arguments.
+	(AC_CONFIG_HEADER): Rename to AC_CONFIG_HEADERS, quote argument.
+	(AC_CONFIG_FILES): Add.
+	(AC_OUTPUT): Modernize.
+
+	* m4: Instantiate https://github.com/F-i-f/fi-autoconf-macros
+	submodule.
+
+	* configure.in: Rename to configure.ac.
+
 2001-11-16  Philippe Troin  <phil@fifi.org>
 
 	* Released 0.94.
@@ -30,7 +56,7 @@
 
 	* ptyopen.c (main): Includes copyright notice in --version.
 
-2000-09-30  Philippe Troin  <phil@fifi.org>
+2000-09-30, 24  Philippe Troin  <phil@fifi.org>
 
 	* Released 0.92.
 
