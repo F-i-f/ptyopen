@@ -1,20 +1,20 @@
-.\"  ptyopen - runs a program on a fake terminal                               
+.\"  ptyopen - runs a program on a fake terminal
 .\"  ptyopen.1 - man page
-.\"  Copyright (C) 1999-2000 Philippe Troin <phil@fifi.org>
+.\"  Copyright (C) 1999-2000, 2024 Philippe Troin <phil@fifi.org>
 .\"
 .\"  This program is free software; you can redistribute it and/or modify
 .\"  it under the terms of the GNU General Public License as published by
-.\"  the Free Software Foundation; either version 2 of the License, or
+.\"  the Free Software Foundation; either version 3 of the License, or
 .\"  (at your option) any later version.
-.\"  
+.\"
 .\"  This program is distributed in the hope that it will be useful,
 .\"  but WITHOUT ANY WARRANTY; without even the implied warranty of
 .\"  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\"  GNU General Public License for more details.
-.\"  
+.\"
 .\"  You should have received a copy of the GNU General Public License
 .\"  along with this program; if not, write to the Free Software
-.\"  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+.\"  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 .TH PTYOPEN 1 "" "Debian" ""
 
 .SH NAME
@@ -22,13 +22,13 @@ ptyopen \- Runs a command in a pseudo-terminal and redirects it to stdin/stdout
 
 .SH SYNOPSIS
 .B ptyopen
-[-v] [--verbose] [-V] [--version] [-u] [--unsecure] [-w] [--write] [-r 
+[-v] [--verbose] [-V] [--version] [-u] [--unsecure] [-w] [--write] [-r
 .I size
 ] [ --ringsize
 .I size
-] [-g 
+] [-g
 .I geometry
-] [--geometry 
+] [--geometry
 .I geometry
 ] [-h] [--help]
 .I command [arguments...]
@@ -42,7 +42,7 @@ with its
 .I arguments
 in it. All tty output of the slave
 .I command
-is redirected to 
+is redirected to
 .B ptyopen's
 stdout. All data fed into
 .B ptyopen's
@@ -61,7 +61,7 @@ for example.
 .SH OPTIONS
 .TP
 .I -v, --verbose
-Runs verbosely. Namely, 
+Runs verbosely. Namely,
 .B ptyopen
 will report "benign" errors while handling terminal capabilities and
 window sizing.
@@ -71,7 +71,7 @@ will also report verbosely the exit code of
 
 .TP
 .I -V, --version
-Prints 
+Prints
 .B ptyopen's
 version.
 
@@ -79,7 +79,7 @@ version.
 .I -u, --unsecure
 If running under a system which requires
 .B ptyopen
-to be setuid root, the unsecure option allows 
+to be setuid root, the unsecure option allows
 .B ptyopen
 to run without changing the permissions and ownership of the
 pseudo-terminal (and indeed makes
@@ -101,9 +101,9 @@ Takes an argument, the number of bytes of
 .B ptyopen's
 input and output buffers. When writing to
 .B ptyopen's
-stdin, 
+stdin,
 .B ptyopen
-buffers some amount of data. Similarly, when the 
+buffers some amount of data. Similarly, when the
 .I program
 writes to the terminal,
 .B ptyopen
@@ -114,8 +114,8 @@ One might want to change the default buffer size for obscure reasons.
 .I -g, --geometry <geometry>
 Makes
 .I program
-believe it runs in a terminal whose size is given by 
-.I <geometry>. 
+believe it runs in a terminal whose size is given by
+.I <geometry>.
 For example 80x25 or 132x50.
 
 .TP
@@ -157,7 +157,7 @@ connected to
 stdin and stdout.
 
 .SS END OF FILE
-If 
+If
 .B ptyopen's
 stdin is closed, then an EOF character (as determined by the
 pseudo-terminal's capabilities) is sent to the terminal. Whether or not
@@ -175,8 +175,8 @@ exits with the exit code of the slave
 unless it encounters some error. In that case it will exit with 255.
 
 .SH SECURITY
-On BSD systems, 
-.B ptyopen 
+On BSD systems,
+.B ptyopen
 needs to be setuid root so that the pseudo-terminal's permissions and
 ownership can be changed.
 .B ptyopen
@@ -198,7 +198,7 @@ Written and Copyright (C) 1998-2000 Philippe Troin <phil@fifi.org>.
 THIS PROGRAM COMES WITH ABSOLUTELY NO WARRANTY.
 
 .SH HISTORY
-This program was written as a way to control 
+This program was written as a way to control
 .B dump(8)
 from a backup script.
 \"  LocalWords:  ptyopen Troin phil Exp Debian stdin stdout unsecure ringsize

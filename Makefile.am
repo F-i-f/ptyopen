@@ -1,10 +1,10 @@
 # ptyopen - controls command in a pseudo-terminal
 # Makefile.am
-# Copyright (C) 2000, 2001 Philippe Troin <phil@fifi.org>
+# Copyright (C) 2000, 2001, 2024 Philippe Troin <phil@fifi.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -32,7 +32,7 @@ MAINTAINERCLEANFILES = $(CONFIG_FILES) \
 		       $(srcdir)/Makefile.in \
 		       $(srcdir)/configure \
 		       $(srcdir)/aclocal.m4 \
-                       $(srcdir)/stamp.h \
+		       $(srcdir)/stamp.h \
 		       $(srcdir)/stamp-h.in
 
 INSTALL_PROGRAM = $(INSTALL) @exeinstflags@ ${AM_INSTALL_PROGRAM_FLAGS}

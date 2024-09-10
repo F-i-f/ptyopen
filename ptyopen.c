@@ -1,11 +1,11 @@
 /*
   ptyopen - runs a program on a fake terminal
   ptyopen.c - main program
-  Copyright (C) 1999-2001 Philippe Troin <phil@fifi.org>
+  Copyright (C) 1999-2001, 2024 Philippe Troin <phil@fifi.org>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
+  the Free Software Foundation; either version 3 of the License, or
   (at your option) any later version.
 
   This program is distributed in the hope that it will be useful,
@@ -137,7 +137,7 @@ int             child_exit_pipe          = -1; /* Some invalid fd value */
 const char*	state_tty_name;
 savedperms_t	state_tty_perms;
 int		state_saved_stdin_flags  = -1;
-int	        state_saved_stdout_flags = -1;
+int		state_saved_stdout_flags = -1;
 struct termios* state_orig_termios;
 pid_t           state_child_pid;
 int             state_pty_fd;
